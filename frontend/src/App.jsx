@@ -3,8 +3,11 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Header from "./components/Header";
 import Properties from "./pages/Properties";
+import CreateProperty from "./pages/CreateProperty";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+
+import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
   return (
@@ -13,9 +16,6 @@ function App() {
         <Header />
         <div className="container mx-auto px-4 py-8">
           <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/properties" element={<Properties />} />
             <Route
               path="/"
               element={
@@ -24,6 +24,14 @@ function App() {
                 </h1>
               }
             />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/properties" element={<Properties />} />
+
+            {/* Protected Routes */}
+            <Route element={<PrivateRoute />}>
+              <Route path="/create-property" element={<CreateProperty />} />
+            </Route>
           </Routes>
         </div>
       </Router>
