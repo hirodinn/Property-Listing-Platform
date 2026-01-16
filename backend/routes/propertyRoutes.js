@@ -1,0 +1,26 @@
+import express from "express";
+import {
+  createProperty,
+  publishProperty,
+  getProperties,
+  getMyProperties,
+  deleteProperty,
+  getPropertyById,
+} from "../controllers/propertyController.js";
+import { protect, authorize } from "../middleware/authMiddleware.js";
+import upload from "../utils/upload.js";
+
+const router = express.Router();
+
+router
+  .route("/")
+  .get(getProperties)
+  .post(protect, authorize("owner"), upload.array("images"), createProperty);
+
+router.get("/my", protect, authorize("owner"), getMyProperties);
+
+router.route("/:id").get(getPropertyById).delete(protect, deleteProperty); // Logic inside controller handles owner/admin check
+
+router.put("/:id/publish", protect, authorize("owner"), publishProperty);
+
+export default router;
