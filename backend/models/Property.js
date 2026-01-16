@@ -45,12 +45,12 @@ const propertySchema = mongoose.Schema(
 );
 
 // Query Middleware to exclude soft-deleted documents by default
-propertySchema.pre(/^find/, function (next) {
+// Query Middleware to exclude soft-deleted documents by default
+propertySchema.pre(/^find/, function () {
   if (this.options.includeDeleted) {
-    return next();
+    return;
   }
-  this.find({ deletedAt: null });
-  next();
+  this.where({ deletedAt: null });
 });
 
 const Property = mongoose.model("Property", propertySchema);
