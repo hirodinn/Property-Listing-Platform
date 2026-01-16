@@ -50,16 +50,16 @@ function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-96">
-        <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">
+    <div className="min-h-[80vh] flex items-center justify-center">
+      <div className="bg-[var(--color-bg-card)] p-8 rounded-lg shadow-md w-96">
+        <h1 className="text-2xl font-bold mb-6 text-center text-[var(--color-primary)]">
           Login
         </h1>
         <form onSubmit={onSubmit}>
           <div className="mb-4">
             <input
               type="email"
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-secondary)] bg-white text-[var(--color-text-main)]"
               id="email"
               name="email"
               value={email}
@@ -71,7 +71,7 @@ function Login() {
           <div className="mb-6">
             <input
               type="password"
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-secondary)] bg-white text-[var(--color-text-main)]"
               id="password"
               name="password"
               value={password}
@@ -82,14 +82,17 @@ function Login() {
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300"
+            className="w-full bg-[var(--color-secondary)] text-white py-2 rounded-lg hover:bg-opacity-90 transition duration-300 font-semibold"
           >
-            Submit
+            Sign In
           </button>
         </form>
-        <p className="mt-4 text-center text-gray-600 text-sm">
+        <p className="mt-4 text-center text-[var(--color-text-muted)] text-sm">
           Don't have an account?{" "}
-          <Link to="/register" className="text-blue-500 hover:underline">
+          <Link
+            to="/register"
+            className="text-[var(--color-secondary)] hover:underline"
+          >
             Register
           </Link>
         </p>

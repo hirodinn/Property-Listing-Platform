@@ -52,16 +52,16 @@ function Register() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-96">
-        <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">
+    <div className="min-h-[80vh] flex items-center justify-center">
+      <div className="bg-[var(--color-bg-card)] p-8 rounded-lg shadow-md w-96">
+        <h1 className="text-2xl font-bold mb-6 text-center text-[var(--color-primary)]">
           Register
         </h1>
         <form onSubmit={onSubmit}>
           <div className="mb-4">
             <input
               type="text"
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-secondary)] bg-white text-[var(--color-text-main)]"
               id="name"
               name="name"
               value={name}
@@ -73,7 +73,7 @@ function Register() {
           <div className="mb-4">
             <input
               type="email"
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-secondary)] bg-white text-[var(--color-text-main)]"
               id="email"
               name="email"
               value={email}
@@ -85,7 +85,7 @@ function Register() {
           <div className="mb-4">
             <input
               type="password"
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-secondary)] bg-white text-[var(--color-text-main)]"
               id="password"
               name="password"
               value={password}
@@ -95,32 +95,35 @@ function Register() {
             />
           </div>
           <div className="mb-6">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
+            <label className="block text-[var(--color-text-main)] text-sm font-bold mb-2">
               Role
             </label>
             <select
               name="role"
               value={role}
               onChange={onChange}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-secondary)] bg-white text-[var(--color-text-main)]"
             >
               <option value="user">Regular User</option>
               <option value="owner">Property Owner</option>
             </select>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-[var(--color-text-muted)] mt-1">
               (Note: Admin role cannot be created here)
             </p>
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300"
+            className="w-full bg-[var(--color-secondary)] text-white py-2 rounded-lg hover:bg-opacity-90 transition duration-300 font-semibold"
           >
             Submit
           </button>
         </form>
-        <p className="mt-4 text-center text-gray-600 text-sm">
+        <p className="mt-4 text-center text-[var(--color-text-muted)] text-sm">
           Already have an account?{" "}
-          <Link to="/login" className="text-blue-500 hover:underline">
+          <Link
+            to="/login"
+            className="text-[var(--color-secondary)] hover:underline"
+          >
             Login
           </Link>
         </p>
