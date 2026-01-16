@@ -1,0 +1,45 @@
+import axios from 'axios';
+
+const API_URL = `${import.meta.env.VITE_API_URL}/properties`;
+
+// Axios instance with credentials enabled for cookies
+const axiosInstance = axios.create({
+  withCredentials: true,
+  baseURL: import.meta.env.VITE_API_URL, 
+});
+
+// Since we set baseURL in instance, we can just use /properties path or just use full URL if we stick to axios.
+// Let's use axiosInstance.
+
+// Create new property
+const createProperty = async (propertyData) => {
+  const response = await axiosInstance.post('/properties', propertyData);
+  return response.data;
+};
+
+// Get all properties
+const getProperties = async (params) => {
+  const response = await axios.get(API_URL, { params }); // Public route, no need for credentials usually unless tracking?
+  return response.data;
+};
+
+// Get user properties
+const getMyProperties = async () => {
+  const response = await axiosInstance.get('/properties/my');
+  return response.data;
+};
+
+// Delete property
+const deleteProperty = async (propertyId) => {
+  const response = await axiosInstance.delete(`/properties/${propertyId}`);
+  return response.data;
+};
+
+const propertyService = {
+  createProperty,
+  getProperties,
+  getMyProperties,
+  deleteProperty,
+};
+
+export default propertyService;
