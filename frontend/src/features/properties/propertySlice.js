@@ -10,6 +10,11 @@ const initialState = {
   message: "",
 };
 
+// Helper to extract error message
+const responseErrorMessage = (error) => {
+    return (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
+};
+
 // Create new property
 export const createProperty = createAsyncThunk(
   "properties/create",
@@ -58,10 +63,23 @@ export const getMyProperties = createAsyncThunk(
           error.response.data &&
           error.response.data.message) ||
         error.message ||
-        error.toString();
+      const message = responseErrorMessage(error);
       return thunkAPI.rejectWithValue(message);
     }
   },
+);
+
+// Get property by ID
+export const getProperty = createAsyncThunk(
+  'properties/getOne',
+  async (id, thunkAPI) => {
+    try {
+      return await propertyService.getProperty(id);
+    } catch (error) {
+       const message = responseErrorMessage(error);
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
 );
 
 export const propertySlice = createSlice({
@@ -94,6 +112,19 @@ export const propertySlice = createSlice({
         state.properties = action.payload.properties;
       })
       .addCase(getProperties.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(getProperty.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getProperty.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.property = action.payload;
+      })
+      .addCase(getProperty.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;

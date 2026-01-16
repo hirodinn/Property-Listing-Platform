@@ -1,11 +1,11 @@
-import axios from 'axios';
+import axios from "axios";
 
 const API_URL = `${import.meta.env.VITE_API_URL}/properties`;
 
 // Axios instance with credentials enabled for cookies
 const axiosInstance = axios.create({
   withCredentials: true,
-  baseURL: import.meta.env.VITE_API_URL, 
+  baseURL: import.meta.env.VITE_API_URL,
 });
 
 // Since we set baseURL in instance, we can just use /properties path or just use full URL if we stick to axios.
@@ -13,7 +13,7 @@ const axiosInstance = axios.create({
 
 // Create new property
 const createProperty = async (propertyData) => {
-  const response = await axiosInstance.post('/properties', propertyData);
+  const response = await axiosInstance.post("/properties", propertyData);
   return response.data;
 };
 
@@ -25,7 +25,13 @@ const getProperties = async (params) => {
 
 // Get user properties
 const getMyProperties = async () => {
-  const response = await axiosInstance.get('/properties/my');
+  const response = await axiosInstance.get("/properties/my");
+  return response.data;
+};
+
+// Get property by ID
+const getProperty = async (propertyId) => {
+  const response = await axios.get(`${API_URL}/${propertyId}`);
   return response.data;
 };
 
@@ -38,6 +44,7 @@ const deleteProperty = async (propertyId) => {
 const propertyService = {
   createProperty,
   getProperties,
+  getProperty,
   getMyProperties,
   deleteProperty,
 };
