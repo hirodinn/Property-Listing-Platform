@@ -17,18 +17,19 @@ function Properties() {
   );
 
   useEffect(() => {
-    if (isError) {
-      console.error(message);
-    }
-
     dispatch(getProperties(filters));
 
     return () => {
       dispatch(reset());
     };
-  }, [dispatch, isError, message]);
-  // removed filters from dependency to prevent infinite loop on object creation,
-  // triggering dispatch on mount and when explicit search action happens
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch]); // Run once on mount. Search handles updates.
+
+  useEffect(() => {
+    if (isError) {
+      console.error(message);
+    }
+  }, [isError, message]);
 
   const handleSearch = (e) => {
     e.preventDefault();

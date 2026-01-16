@@ -6,6 +6,7 @@ import Properties from "./pages/Properties";
 import CreateProperty from "./pages/CreateProperty";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import PropertyDetails from "./pages/PropertyDetails";
 
 import PrivateRoute from "./components/PrivateRoute";
 

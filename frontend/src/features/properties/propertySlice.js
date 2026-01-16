@@ -12,7 +12,11 @@ const initialState = {
 
 // Helper to extract error message
 const responseErrorMessage = (error) => {
-    return (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
+  return (
+    (error.response && error.response.data && error.response.data.message) ||
+    error.message ||
+    error.toString()
+  );
 };
 
 // Create new property
@@ -22,12 +26,7 @@ export const createProperty = createAsyncThunk(
     try {
       return await propertyService.createProperty(propertyData);
     } catch (error) {
-      const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
+      const message = responseErrorMessage(error);
       return thunkAPI.rejectWithValue(message);
     }
   },
@@ -40,12 +39,7 @@ export const getProperties = createAsyncThunk(
     try {
       return await propertyService.getProperties(params);
     } catch (error) {
-      const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
+      const message = responseErrorMessage(error);
       return thunkAPI.rejectWithValue(message);
     }
   },
@@ -58,11 +52,6 @@ export const getMyProperties = createAsyncThunk(
     try {
       return await propertyService.getMyProperties();
     } catch (error) {
-      const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
       const message = responseErrorMessage(error);
       return thunkAPI.rejectWithValue(message);
     }
@@ -71,15 +60,15 @@ export const getMyProperties = createAsyncThunk(
 
 // Get property by ID
 export const getProperty = createAsyncThunk(
-  'properties/getOne',
+  "properties/getOne",
   async (id, thunkAPI) => {
     try {
       return await propertyService.getProperty(id);
     } catch (error) {
-       const message = responseErrorMessage(error);
+      const message = responseErrorMessage(error);
       return thunkAPI.rejectWithValue(message);
     }
-  }
+  },
 );
 
 export const propertySlice = createSlice({
