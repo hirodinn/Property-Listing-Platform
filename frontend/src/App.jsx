@@ -7,6 +7,7 @@ import CreateProperty from "./pages/CreateProperty";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import PropertyDetails from "./pages/PropertyDetails";
+import Dashboard from "./pages/Dashboard";
 
 import PrivateRoute from "./components/PrivateRoute";
 
@@ -32,6 +33,14 @@ function App() {
 
             {/* Protected Routes */}
             <Route element={<PrivateRoute />}>
+              <Route
+                path="/dashboard"
+                element={
+                  <PrivateRoute>
+                    <Dashboard />
+                  </PrivateRoute>
+                }
+              />
               <Route path="/create-property" element={<CreateProperty />} />
             </Route>
           </Routes>

@@ -56,12 +56,20 @@ function Header() {
               <span className="text-[var(--color-text-main)] font-medium hidden sm:block">
                 Hi, {user.name}
               </span>
-              <button
-                onClick={onLogout}
-                className="flex items-center gap-2 text-[var(--color-text-muted)] hover:text-red-500 transition"
-              >
-                <FaSignOutAlt /> Logout
-              </button>
+              <>
+                <Link
+                  to="/dashboard"
+                  className="flex items-center gap-1 hover:text-[var(--color-secondary)] transition"
+                >
+                  <FaUserCircle /> Dashboard
+                </Link>
+                <button
+                  onClick={onLogout}
+                  className="flex items-center gap-2 text-[var(--color-text-muted)] hover:text-red-500 transition"
+                >
+                  <FaSignOutAlt /> Logout
+                </button>
+              </>
             </div>
           ) : (
             <>
