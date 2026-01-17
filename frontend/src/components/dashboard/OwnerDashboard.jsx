@@ -4,10 +4,11 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   getMyProperties,
   deleteProperty,
+  publishProperty,
   reset,
 } from "../../features/properties/propertySlice";
 import Spinner from "../Spinner";
-import { FaPlus, FaTrash, FaPen, FaEye } from "react-icons/fa";
+import { FaPlus, FaTrash, FaPen, FaEye, FaUpload } from "react-icons/fa";
 
 const OwnerDashboard = () => {
   const dispatch = useDispatch();
@@ -27,6 +28,16 @@ const OwnerDashboard = () => {
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this property?")) {
       dispatch(deleteProperty(id));
+    }
+  };
+
+  const handlePublish = (id) => {
+    if (
+      window.confirm(
+        "Are you ready to publish this property? It will be visible to everyone.",
+      )
+    ) {
+      dispatch(publishProperty(id));
     }
   };
 
@@ -73,10 +84,16 @@ const OwnerDashboard = () => {
         >
           <FaEye /> View
         </Link>
-        {/* Edit feature placeholder */}
-        {/* <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 font-medium text-sm">
-                 <FaPen /> Edit
-             </button> */}
+
+        {property.status === "draft" && (
+          <button
+            onClick={() => handlePublish(property._id)}
+            className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 font-medium text-sm"
+          >
+            <FaUpload /> Publish
+          </button>
+        )}
+
         <button
           onClick={() => handleDelete(property._id)}
           className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 font-medium text-sm"

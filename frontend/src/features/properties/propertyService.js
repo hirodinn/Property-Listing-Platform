@@ -41,12 +41,19 @@ const deleteProperty = async (propertyId) => {
   return response.data;
 };
 
+// Publish property
+const publishProperty = async (propertyId) => {
+  const response = await axiosInstance.put(`/properties/${propertyId}/publish`);
+  return response.data;
+};
+
 const propertyService = {
   createProperty,
   getProperties,
   getProperty,
   getMyProperties,
   deleteProperty,
+  publishProperty,
 };
 
 export default propertyService;

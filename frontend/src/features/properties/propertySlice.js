@@ -83,6 +83,20 @@ export const deleteProperty = createAsyncThunk(
     }
   },
 );
+
+// Publish property
+export const publishProperty = createAsyncThunk(
+  "properties/publish",
+  async (id, thunkAPI) => {
+    try {
+      return await propertyService.publishProperty(id);
+    } catch (error) {
+      const message = responseErrorMessage(error);
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+
 export const propertySlice = createSlice({
   name: "property",
   initialState,
@@ -149,6 +163,16 @@ export const propertySlice = createSlice({
         state.properties = state.properties.filter(
           (property) => property._id !== action.payload,
         );
+      })
+      .addCase(publishProperty.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        const index = state.properties.findIndex(
+          (p) => p._id === action.payload._id,
+        );
+        if (index !== -1) {
+          state.properties[index] = action.payload;
+        }
       });
   },
 });

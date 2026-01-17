@@ -30,7 +30,7 @@ function CreateProperty() {
 
     if (isSuccess) {
       toast.success("Property created successfully!");
-      navigate("/properties");
+      navigate("/dashboard");
     }
 
     dispatch(reset());
