@@ -3,7 +3,6 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Header from "./components/Header";
 import Properties from "./pages/Properties";
-import CreateProperty from "./pages/CreateProperty";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import PropertyDetails from "./pages/PropertyDetails";
@@ -44,7 +43,6 @@ function App() {
             {/* Protected Routes */}
             <Route element={<PrivateRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/create-property" element={<CreateProperty />} />
             </Route>
           </Routes>
         </div>
