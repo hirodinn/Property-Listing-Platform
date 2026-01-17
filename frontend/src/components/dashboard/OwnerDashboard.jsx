@@ -1,19 +1,20 @@
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   getMyProperties,
+  deleteProperty,
   reset,
 } from "../../features/properties/propertySlice";
 import Spinner from "../Spinner";
-import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
+import { FaPlus, FaTrash, FaPen, FaEye } from "react-icons/fa";
 
 const OwnerDashboard = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { properties, isLoading, isError, message } = useSelector(
     (state) => state.properties,
   );
-  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(getMyProperties());
@@ -25,8 +26,7 @@ const OwnerDashboard = () => {
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this property?")) {
-      // dispatch(deleteProperty(id)) // Need to implement delete in slice/component action
-      console.log("Delete feature coming soon", id);
+      dispatch(deleteProperty(id));
     }
   };
 
@@ -34,80 +34,130 @@ const OwnerDashboard = () => {
     return <Spinner />;
   }
 
+  const drafts = properties.filter((p) => p.status === "draft");
+  const published = properties.filter((p) => p.status === "published");
+
+  const PropertyCard = ({ property }) => (
+    <div className="bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition p-4 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+      <div className="flex gap-4 items-center">
+        <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-gray-200">
+          {property.images && property.images.length > 0 ? (
+            <img
+              src={property.images[0]}
+              alt={property.title}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+              No Image
+            </div>
+          )}
+        </div>
+        <div>
+          <h4 className="font-bold text-lg text-[var(--color-primary)]">
+            {property.title}
+          </h4>
+          <p className="text-sm text-[var(--color-secondary)]">
+            {property.location}
+          </p>
+          <p className="text-sm font-semibold mt-1">
+            ${property.price.toLocaleString()}
+          </p>
+        </div>
+      </div>
+
+      <div className="flex gap-3 mt-4 md:mt-0 w-full md:w-auto">
+        <Link
+          to={`/property/${property._id}`}
+          className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 font-medium text-sm"
+        >
+          <FaEye /> View
+        </Link>
+        {/* Edit feature placeholder */}
+        {/* <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 font-medium text-sm">
+                 <FaPen /> Edit
+             </button> */}
+        <button
+          onClick={() => handleDelete(property._id)}
+          className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 font-medium text-sm"
+        >
+          <FaTrash /> Delete
+        </button>
+      </div>
+    </div>
+  );
+
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-[var(--color-primary)]">
-          My Properties
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-3xl font-bold text-[var(--color-primary)]">
+          Owner Dashboard
         </h2>
         <Link
           to="/create-property"
-          className="flex items-center gap-2 bg-[var(--color-primary)] text-white px-4 py-2 rounded-lg hover:bg-opacity-90"
+          className="flex items-center gap-2 bg-[var(--color-primary)] text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition font-medium shadow-md"
         >
-          <FaPlus /> Add New
+          <FaPlus /> Create New Property
         </Link>
       </div>
 
-      {isError && <div className="text-red-500 mb-4">{message}</div>}
-
-      {properties.length > 0 ? (
-        <div className="grid grid-cols-1 gap-4">
-          {properties.map((property) => (
-            <div
-              key={property._id}
-              className="bg-white p-4 rounded-lg shadow border border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
-            >
-              <div className="flex gap-4">
-                <img
-                  src={property.images[0] || "https://via.placeholder.com/150"}
-                  alt={property.title}
-                  className="w-24 h-24 object-cover rounded-md"
-                />
-                <div>
-                  <h3 className="font-bold text-lg text-[var(--color-text-main)]">
-                    {property.title}
-                  </h3>
-                  <p className="text-[var(--color-text-muted)]">
-                    {property.location}
-                  </p>
-                  <span
-                    className={`inline-block mt-1 px-2 py-0.5 text-xs rounded-full ${property.status === "published" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}`}
-                  >
-                    {property.status}
-                  </span>
-                </div>
-              </div>
-              <div className="flex gap-2 self-end md:self-center">
-                <Link
-                  to={`/property/${property._id}`}
-                  className="text-blue-600 hover:bg-blue-50 p-2 rounded"
-                >
-                  View
-                </Link>
-                {/* <button className="text-gray-600 hover:bg-gray-50 p-2 rounded"><FaEdit /></button> */}
-                <button
-                  onClick={() => handleDelete(property._id)}
-                  className="text-red-600 hover:bg-red-50 p-2 rounded"
-                >
-                  <FaTrash />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-10 bg-gray-50 rounded-lg">
-          <p className="text-[var(--color-text-muted)] mb-4">
-            You haven't listed any properties yet.
-          </p>
-          <Link
-            to="/create-property"
-            className="text-[var(--color-primary)] font-semibold hover:underline"
-          >
-            Create your first listing
-          </Link>
+      {isError && (
+        <div className="bg-red-100 text-red-700 p-4 rounded-lg mb-6">
+          {message}
         </div>
       )}
+
+      <div className="space-y-10">
+        {/* Drafts Section */}
+        <section>
+          <div className="flex items-center gap-3 mb-4">
+            <h3 className="text-xl font-bold text-gray-700">Drafts</h3>
+            <span className="bg-gray-200 text-gray-700 text-xs font-bold px-2 py-1 rounded-full">
+              {drafts.length}
+            </span>
+          </div>
+
+          {drafts.length > 0 ? (
+            <div className="space-y-4">
+              {drafts.map((property) => (
+                <PropertyCard key={property._id} property={property} />
+              ))}
+            </div>
+          ) : (
+            <div className="bg-gray-50 border border-dashed border-gray-300 rounded-xl p-8 text-center">
+              <p className="text-gray-500 mb-4">No drafts currently.</p>
+              <Link
+                to="/create-property"
+                className="inline-flex items-center gap-2 text-[var(--color-primary)] font-semibold border border-[var(--color-primary)] px-4 py-2 rounded-lg hover:bg-[var(--color-primary)] hover:text-white transition"
+              >
+                <FaPlus /> Start a New Draft
+              </Link>
+            </div>
+          )}
+        </section>
+
+        {/* Published Section */}
+        <section>
+          <div className="flex items-center gap-3 mb-4">
+            <h3 className="text-xl font-bold text-green-700">Published</h3>
+            <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded-full">
+              {published.length}
+            </span>
+          </div>
+
+          {published.length > 0 ? (
+            <div className="space-y-4">
+              {published.map((property) => (
+                <PropertyCard key={property._id} property={property} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-gray-400 italic p-4 border border-gray-100 rounded-lg text-center">
+              No published properties yet.
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   );
 };

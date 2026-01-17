@@ -70,7 +70,19 @@ export const getProperty = createAsyncThunk(
     }
   },
 );
-
+// Delete property
+export const deleteProperty = createAsyncThunk(
+  "properties/delete",
+  async (id, thunkAPI) => {
+    try {
+      await propertyService.deleteProperty(id);
+      return id;
+    } catch (error) {
+      const message = responseErrorMessage(error);
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
 export const propertySlice = createSlice({
   name: "property",
   initialState,
@@ -130,6 +142,13 @@ export const propertySlice = createSlice({
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
+      })
+      .addCase(deleteProperty.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.properties = state.properties.filter(
+          (property) => property._id !== action.payload,
+        );
       });
   },
 });

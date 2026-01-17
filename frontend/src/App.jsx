@@ -33,14 +33,7 @@ function App() {
 
             {/* Protected Routes */}
             <Route element={<PrivateRoute />}>
-              <Route
-                path="/dashboard"
-                element={
-                  <PrivateRoute>
-                    <Dashboard />
-                  </PrivateRoute>
-                }
-              />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/create-property" element={<CreateProperty />} />
             </Route>
           </Routes>

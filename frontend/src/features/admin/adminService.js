@@ -8,14 +8,26 @@ const getSystemMetrics = async () => {
   return response.data;
 };
 
+const getAllUsers = async () => {
+  const response = await axios.get(`${API_URL}/users`);
+  return response.data;
+};
+
+const getAllProperties = async () => {
+  const response = await axios.get(`${API_URL}/properties`);
+  return response.data;
+};
+
 // Disable property
-const disableProperty = async (propertyId) => {
-  const response = await axios.put(`${API_URL}/property/${propertyId}/disable`);
+const disableProperty = async (id) => {
+  const response = await axios.put(`${API_URL}/properties/${id}/disable`);
   return response.data;
 };
 
 const adminService = {
   getSystemMetrics,
+  getAllUsers,
+  getAllProperties,
   disableProperty,
 };
 

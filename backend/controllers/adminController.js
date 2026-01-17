@@ -47,4 +47,17 @@ const getAllPropertiesAdmin = async (req, res) => {
   res.json(properties);
 };
 
-export { getSystemMetrics, disableProperty, getAllPropertiesAdmin };
+// @desc    Get all users (Admin)
+// @route   GET /api/admin/users
+// @access  Admin
+const getAllUsers = async (req, res) => {
+  const users = await User.find({}).select("-password");
+  res.json(users);
+};
+
+export {
+  getSystemMetrics,
+  disableProperty,
+  getAllPropertiesAdmin,
+  getAllUsers,
+};

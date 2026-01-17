@@ -4,7 +4,8 @@ import adminService from "./adminService";
 const initialState = {
   usersCount: 0,
   propertiesCount: 0,
-  recentActivities: [], // If backend provides this
+  usersList: [],
+  propertiesList: [],
   isLoading: false,
   isError: false,
   isSuccess: false,
@@ -26,6 +27,32 @@ export const getSystemMetrics = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       return await adminService.getSystemMetrics();
+    } catch (error) {
+      const message = responseErrorMessage(error);
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+
+// Get All Users
+export const getAllUsers = createAsyncThunk(
+  "admin/getAllUsers",
+  async (_, thunkAPI) => {
+    try {
+      return await adminService.getAllUsers();
+    } catch (error) {
+      const message = responseErrorMessage(error);
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+
+// Get All Properties
+export const getAllProperties = createAsyncThunk(
+  "admin/getAllProperties",
+  async (_, thunkAPI) => {
+    try {
+      return await adminService.getAllProperties();
     } catch (error) {
       const message = responseErrorMessage(error);
       return thunkAPI.rejectWithValue(message);
@@ -65,26 +92,39 @@ export const adminSlice = createSlice({
       .addCase(getSystemMetrics.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.usersCount = action.payload.users;
-        state.propertiesCount = action.payload.properties;
+        // Correcting the mapping based on backend response keys
+        state.usersCount = action.payload.totalUsers;
+        state.propertiesCount = action.payload.totalProperties;
       })
       .addCase(getSystemMetrics.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
       })
-      .addCase(disableProperty.pending, (state) => {
+      .addCase(getAllUsers.pending, (state) => {
         state.isLoading = true;
+      })
+      .addCase(getAllUsers.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.usersList = action.payload;
+      })
+      .addCase(getAllProperties.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getAllProperties.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.propertiesList = action.payload;
       })
       .addCase(disableProperty.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        // Optionally update local list or just notify success
-      })
-      .addCase(disableProperty.rejected, (state, action) => {
-        state.isLoading = false;
-        state.isError = true;
-        state.message = action.payload;
+        // Update local state to reflect change - find property and update status
+        const index = state.propertiesList.findIndex(
+          (p) => p._id === action.payload.property._id,
+        );
+        if (index !== -1) {
+          state.propertiesList[index] = action.payload.property;
+        }
       });
   },
 });
