@@ -39,14 +39,7 @@ function Header() {
           >
             Properties
           </Link>
-          {user && (
-            <Link
-              to="/create-property"
-              className="text-[var(--color-primary)] bg-gray-100 px-4 py-2 rounded-full hover:bg-gray-200 transition"
-            >
-              List Property
-            </Link>
-          )}
+          {user && <div className="hidden"></div>}
         </nav>
 
         {/* Auth Buttons */}

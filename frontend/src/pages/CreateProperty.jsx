@@ -51,6 +51,7 @@ function CreateProperty() {
   };
 
   const onSubmit = (e) => {
+    console.log("this is excuted");
     e.preventDefault();
 
     const propertyData = new FormData();

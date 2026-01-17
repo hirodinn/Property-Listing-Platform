@@ -5,40 +5,48 @@ import cloudinary from "../config/cloudinary.js";
 // @desc    Create a new property (Draft)
 // @route   POST /api/properties
 // @access  Owner
-const createProperty = async (req, res) => {
-  const { title, description, location, price } = req.body;
+const createProperty = async (req, res, next) => {
+  try {
+    const { title, description, location, price } = req.body;
 
-  // Images are handled by multer and uploaded to cloud in a separate middleware or here loop
-  // For simplicity, we assume frontend sends files and we upload them here OR helper middleware does it.
-  // Actually, standard practice: Multer -> req.files -> Upload to Cloudinary -> Get URLs
+    let imageUrls = [];
 
-  let imageUrls = [];
-
-  if (req.files && req.files.length > 0) {
-    for (const file of req.files) {
-      // Upload to cloudinary
-      // Needs to be a buffer stream or convert buffer to base64
-      const b64 = Buffer.from(file.buffer).toString("base64");
-      let dataURI = "data:" + file.mimetype + ";base64," + b64;
-
-      const result = await cloudinary.uploader.upload(dataURI, {
-        folder: "properties",
-      });
-      imageUrls.push(result.secure_url);
+    if (req.files && req.files.length > 0) {
+      for (const file of req.files) {
+        const result = await new Promise((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            {
+              folder: "properties",
+              resource_type: "image",
+              transformation: [{ quality: "auto", fetch_format: "auto" }],
+            },
+            (error, result) => {
+              if (error) return reject(error);
+              resolve(result);
+            },
+          );
+          uploadStream.end(file.buffer);
+        });
+        console.log(result);
+        imageUrls.push(result.secure_url);
+      }
     }
+
+    const property = await Property.create({
+      title,
+      description,
+      location,
+      price: Number(price),
+      images: imageUrls,
+      owner: req.user._id,
+      status: "draft",
+    });
+
+    res.status(201).json(property);
+  } catch (error) {
+    res.status(400);
+    next(error); // Pass to error handler
   }
-
-  const property = await Property.create({
-    title,
-    description,
-    location,
-    price,
-    images: imageUrls,
-    owner: req.user._id,
-    status: "draft",
-  });
-
-  res.status(201).json(property);
 };
 
 // @desc    Publish property (Transactional)

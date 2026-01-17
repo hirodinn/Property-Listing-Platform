@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -9,6 +9,7 @@ import {
 } from "../../features/properties/propertySlice";
 import Spinner from "../Spinner";
 import { FaPlus, FaTrash, FaPen, FaEye, FaUpload } from "react-icons/fa";
+import CreatePropertyForm from "./CreatePropertyForm";
 
 const OwnerDashboard = () => {
   const dispatch = useDispatch();
@@ -16,6 +17,8 @@ const OwnerDashboard = () => {
   const { properties, isLoading, isError, message } = useSelector(
     (state) => state.properties,
   );
+
+  const [showCreateForm, setShowCreateForm] = useState(false);
 
   useEffect(() => {
     dispatch(getMyProperties());
@@ -39,6 +42,13 @@ const OwnerDashboard = () => {
     ) {
       dispatch(publishProperty(id));
     }
+  };
+
+  const handleCreateSuccess = () => {
+    setShowCreateForm(false);
+    // The propertySlice should already handle adding the new property to the state,
+    // but if not, we might need to re-fetch or rely on the store update.
+    // Based on slice logic: state.properties.push(action.payload) is there.
   };
 
   if (isLoading) {
@@ -110,12 +120,23 @@ const OwnerDashboard = () => {
         <h2 className="text-3xl font-bold text-[var(--color-primary)]">
           Owner Dashboard
         </h2>
-        <Link
-          to="/create-property"
-          className="flex items-center gap-2 bg-[var(--color-primary)] text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition font-medium shadow-md"
-        >
-          <FaPlus /> Create New Property
-        </Link>
+        {/* We moved the create button logic to inside the Drafts section as per request, 
+            or we can keep a broader button here too. User said "in the drafts there should be a create propery"
+            so let's emphasize that one, but keeping the top one as a global action is usually good UX. 
+            However, user specifically asked to remove navigation and put it in drafts.
+            Let's keep this button but make it toggle the form in the drafts section.
+        */}
+        {!showCreateForm && (
+          <button
+            onClick={() => {
+              dispatch(reset());
+              setShowCreateForm(true);
+            }}
+            className="flex items-center gap-2 bg-[var(--color-primary)] text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition font-medium shadow-md"
+          >
+            <FaPlus /> Create New Property
+          </button>
+        )}
       </div>
 
       {isError && (
@@ -134,6 +155,14 @@ const OwnerDashboard = () => {
             </span>
           </div>
 
+          {/* Inline Create Form */}
+          {showCreateForm && (
+            <CreatePropertyForm
+              onSuccess={handleCreateSuccess}
+              onCancel={() => setShowCreateForm(false)}
+            />
+          )}
+
           {drafts.length > 0 ? (
             <div className="space-y-4">
               {drafts.map((property) => (
@@ -141,15 +170,20 @@ const OwnerDashboard = () => {
               ))}
             </div>
           ) : (
-            <div className="bg-gray-50 border border-dashed border-gray-300 rounded-xl p-8 text-center">
-              <p className="text-gray-500 mb-4">No drafts currently.</p>
-              <Link
-                to="/create-property"
-                className="inline-flex items-center gap-2 text-[var(--color-primary)] font-semibold border border-[var(--color-primary)] px-4 py-2 rounded-lg hover:bg-[var(--color-primary)] hover:text-white transition"
-              >
-                <FaPlus /> Start a New Draft
-              </Link>
-            </div>
+            !showCreateForm && (
+              <div className="bg-gray-50 border border-dashed border-gray-300 rounded-xl p-8 text-center">
+                <p className="text-gray-500 mb-4">No drafts currently.</p>
+                <button
+                  onClick={() => {
+                    dispatch(reset());
+                    setShowCreateForm(true);
+                  }}
+                  className="inline-flex items-center gap-2 text-[var(--color-primary)] font-semibold border border-[var(--color-primary)] px-4 py-2 rounded-lg hover:bg-[var(--color-primary)] hover:text-white transition"
+                >
+                  <FaPlus /> Start a New Draft
+                </button>
+              </div>
+            )
           )}
         </section>
 

@@ -9,7 +9,6 @@ import Spinner from "../components/Spinner";
 const Dashboard = () => {
   const navigate = useNavigate();
   const { user, isLoading } = useSelector((state) => state.auth);
-  console.log(user);
 
   useEffect(() => {
     if (!user) {

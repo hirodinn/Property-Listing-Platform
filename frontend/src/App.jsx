@@ -11,7 +11,17 @@ import Dashboard from "./pages/Dashboard";
 
 import PrivateRoute from "./components/PrivateRoute";
 
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { getMe } from "./features/auth/authSlice";
+
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getMe());
+  }, [dispatch]);
+
   return (
     <>
       <Router>
