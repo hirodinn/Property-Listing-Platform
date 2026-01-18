@@ -78,4 +78,20 @@ const updateTourStatus = asyncHandler(async (req, res) => {
   res.json(updatedTour);
 });
 
-export { requestTour, getUserTours, getOwnerTours, updateTourStatus };
+const getAllToursAdmin = asyncHandler(async (req, res) => {
+  const tours = await Tour.find({})
+    .populate("property", "title location images price")
+    .populate("user", "name email")
+    .populate("owner", "name email")
+    .sort("-createdAt");
+
+  res.json(tours);
+});
+
+export {
+  requestTour,
+  getUserTours,
+  getOwnerTours,
+  updateTourStatus,
+  getAllToursAdmin,
+};

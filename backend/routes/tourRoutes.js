@@ -5,6 +5,7 @@ import {
   getUserTours,
   getOwnerTours,
   updateTourStatus,
+  getAllToursAdmin,
 } from "../controllers/tourController.js";
 import { protect, authorize } from "../middleware/authMiddleware.js";
 

@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   getSystemMetrics,
   getAllUsers,
   getAllProperties,
+  getAllTours,
   reset,
 } from "../../features/admin/adminSlice";
 import Spinner from "../Spinner";
@@ -16,6 +17,10 @@ import {
   FaClock,
   FaCheck,
   FaTimes,
+  FaCalendarCheck,
+  FaUserShield,
+  FaUserTie,
+  FaUser,
 } from "react-icons/fa";
 import {
   approveProperty,
@@ -23,26 +28,22 @@ import {
 } from "../../features/properties/propertySlice";
 
 const AdminDashboard = () => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const {
     usersCount,
     propertiesCount,
+    toursCount,
     usersList,
     propertiesList,
+    toursList,
     pendingProperties: initialPendingCount,
     isLoading,
     isError,
     message,
   } = useSelector((state) => state.admin);
 
-  const [pendingCount, setPendingCount] = useState(initialPendingCount);
-
-  useEffect(() => {
-    setPendingCount(initialPendingCount);
-  }, [initialPendingCount]);
-
-  const [activeView, setActiveView] = useState("overview"); // overview, users, properties, pending
+  // View state
+  const [activeView, setActiveView] = useState("overview"); // overview, users, properties, pending, tours
 
   useEffect(() => {
     dispatch(getSystemMetrics());
@@ -64,7 +65,16 @@ const AdminDashboard = () => {
 
   const handleViewPending = () => {
     dispatch(getAllProperties());
+    setActiveView("properties"); // Shift to properties view but maybe filter? Or keep pending view.
+    // User wants boxes to not have routes but show details.
+    // Let's keep 'pending' as a view if that helps, or just make it go to properties and highlight pending.
+    // Actually, user said 4 boxes in overview, one of which is pending.
     setActiveView("pending");
+  };
+
+  const handleViewTours = () => {
+    dispatch(getAllTours());
+    setActiveView("tours");
   };
 
   const handleApprove = async (id) => {
@@ -115,227 +125,404 @@ const AdminDashboard = () => {
       )}
 
       {activeView === "overview" && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Users Card */}
           <div
             onClick={handleViewUsers}
-            className="bg-blue-50 p-6 rounded-xl border border-blue-100 cursor-pointer hover:shadow-lg transition transform hover:-translate-y-1 group"
+            className="bg-blue-50 p-6 rounded-2xl border border-blue-100 cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1 group"
           >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-semibold text-blue-800">
-                Total Users
-              </h3>
-              <FaUsers className="text-3xl text-blue-300 group-hover:text-blue-500 transition" />
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-lg font-bold text-blue-800">Users</h3>
+              <FaUsers className="text-2xl text-blue-300 group-hover:text-blue-500 transition" />
             </div>
-            <p className="text-4xl font-bold text-blue-600">{usersCount}</p>
-            <p className="text-sm text-blue-400 mt-2">Click to view details</p>
+            <p className="text-4xl font-black text-blue-600">{usersCount}</p>
+            <p className="text-xs text-blue-400 mt-2 font-medium">
+              Manage system roles &rarr;
+            </p>
           </div>
 
           {/* Properties Card */}
           <div
             onClick={handleViewProperties}
-            className="bg-orange-50 p-6 rounded-xl border border-orange-100 cursor-pointer hover:shadow-lg transition transform hover:-translate-y-1 group"
+            className="bg-orange-50 p-6 rounded-2xl border border-orange-100 cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1 group"
           >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-semibold text-orange-800">
-                Total Properties
-              </h3>
-              <FaBuilding className="text-3xl text-orange-300 group-hover:text-orange-500 transition" />
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-lg font-bold text-orange-800">Properties</h3>
+              <FaBuilding className="text-2xl text-orange-300 group-hover:text-orange-500 transition" />
             </div>
-            <p className="text-4xl font-bold text-orange-600">
+            <p className="text-4xl font-black text-orange-600">
               {propertiesCount}
             </p>
-            <p className="text-sm text-orange-400 mt-2">
-              Click to view details
+            <p className="text-xs text-orange-400 mt-2 font-medium">
+              View all listings &rarr;
             </p>
           </div>
 
           {/* Pending Approval Card */}
           <div
             onClick={handleViewPending}
-            className="bg-yellow-50 p-6 rounded-xl border border-yellow-100 cursor-pointer hover:shadow-lg transition transform hover:-translate-y-1 group"
+            className="bg-yellow-50 p-6 rounded-2xl border border-yellow-100 cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1 group"
           >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-semibold text-yellow-800">
-                Pending Approval
-              </h3>
-              <FaClock className="text-3xl text-yellow-300 group-hover:text-yellow-500 transition" />
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-lg font-bold text-yellow-800">Pending</h3>
+              <FaClock className="text-2xl text-yellow-300 group-hover:text-yellow-500 transition" />
             </div>
-            <p className="text-4xl font-bold text-yellow-600">{pendingCount}</p>
-            <p className="text-sm text-yellow-400 mt-2">
-              Click to review pending
+            <p className="text-4xl font-black text-yellow-600">
+              {initialPendingCount}
+            </p>
+            <p className="text-xs text-yellow-400 mt-2 font-medium">
+              Review queue &rarr;
+            </p>
+          </div>
+
+          {/* Tours Card */}
+          <div
+            onClick={handleViewTours}
+            className="bg-purple-50 p-6 rounded-2xl border border-purple-100 cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1 group"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-lg font-bold text-purple-800">Tours</h3>
+              <FaCalendarCheck className="text-2xl text-purple-300 group-hover:text-purple-500 transition" />
+            </div>
+            <p className="text-4xl font-black text-purple-600">{toursCount}</p>
+            <p className="text-xs text-purple-400 mt-2 font-medium">
+              Site tour monitoring &rarr;
             </p>
           </div>
         </div>
       )}
 
       {activeView === "users" && (
-        <div>
-          <h3 className="text-xl font-bold mb-4">All Users</h3>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
-                  <th className="py-3 px-6">Name</th>
-                  <th className="py-3 px-6">Email</th>
-                  <th className="py-3 px-6">Role</th>
-                  <th className="py-3 px-6">Joined</th>
-                </tr>
-              </thead>
-              <tbody className="text-gray-600 text-sm font-light">
-                {Array.isArray(usersList) && usersList.length > 0 ? (
-                  usersList.map((user) => (
+        <div className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-purple-50 p-4 rounded-xl border border-purple-100">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-bold text-purple-800 uppercase tracking-wider">
+                  Admins
+                </span>
+                <FaUserShield className="text-purple-300" />
+              </div>
+              <p className="text-2xl font-black text-purple-600">
+                {usersList.filter((u) => u.role === "admin").length}
+              </p>
+            </div>
+            <div className="bg-green-50 p-4 rounded-xl border border-green-100">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-bold text-green-800 uppercase tracking-wider">
+                  Owners
+                </span>
+                <FaUserTie className="text-green-300" />
+              </div>
+              <p className="text-2xl font-black text-green-600">
+                {usersList.filter((u) => u.role === "owner").length}
+              </p>
+            </div>
+            <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-bold text-gray-800 uppercase tracking-wider">
+                  Users
+                </span>
+                <FaUser className="text-gray-300" />
+              </div>
+              <p className="text-2xl font-black text-gray-600">
+                {usersList.filter((u) => u.role === "user").length}
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+              User Directory
+              <span className="text-xs font-normal text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
+                {usersList.length}
+              </span>
+            </h3>
+            <div className="overflow-x-auto rounded-xl border border-gray-100">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-gray-50 text-gray-500 uppercase text-[10px] font-bold tracking-widest leading-normal">
+                    <th className="py-4 px-6">Name</th>
+                    <th className="py-4 px-6">Email</th>
+                    <th className="py-4 px-6">Role</th>
+                    <th className="py-4 px-6">Joined</th>
+                  </tr>
+                </thead>
+                <tbody className="text-gray-600 text-sm">
+                  {usersList.map((user) => (
                     <tr
                       key={user._id}
-                      className="border-b border-gray-200 hover:bg-gray-50"
+                      className="border-b border-gray-50 hover:bg-gray-50 transition"
                     >
-                      <td className="py-3 px-6 whitespace-nowrap font-medium">
+                      <td className="py-4 px-6 whitespace-nowrap font-semibold text-gray-800">
                         {user.name}
                       </td>
-                      <td className="py-3 px-6">{user.email}</td>
-                      <td className="py-3 px-6">
+                      <td className="py-4 px-6 text-gray-500">{user.email}</td>
+                      <td className="py-4 px-6">
                         <span
-                          className={`py-1 px-3 rounded-full text-xs ${user.role === "admin" ? "bg-purple-200 text-purple-600" : user.role === "owner" ? "bg-green-200 text-green-600" : "bg-gray-200 text-gray-600"}`}
+                          className={`py-1 px-3 rounded-lg text-[10px] font-bold uppercase tracking-wider ${user.role === "admin" ? "bg-purple-100 text-purple-700" : user.role === "owner" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"}`}
                         >
                           {user.role}
                         </span>
                       </td>
-                      <td className="py-3 px-6">
+                      <td className="py-4 px-6 text-gray-400">
                         {new Date(user.createdAt).toLocaleDateString()}
                       </td>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="4" className="text-center py-4">
-                      No users found
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}
 
       {activeView === "properties" && (
-        <div>
-          <h3 className="text-xl font-bold mb-4">All Properties</h3>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
-                  <th className="py-3 px-6">Title</th>
-                  <th className="py-3 px-6">Owner</th>
-                  <th className="py-3 px-6">Price</th>
-                  <th className="py-3 px-6">Status</th>
-                  <th className="py-3 px-6">Date</th>
-                </tr>
-              </thead>
-              <tbody className="text-gray-600 text-sm font-light">
-                {Array.isArray(propertiesList) && propertiesList.length > 0 ? (
-                  propertiesList.map((property) => (
+        <div className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-green-50 p-4 rounded-xl border border-green-100">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-bold text-green-800 uppercase tracking-wider">
+                  Posted
+                </span>
+                <FaCheck className="text-green-300" />
+              </div>
+              <p className="text-2xl font-black text-green-600">
+                {propertiesList.filter((p) => p.status === "published").length}
+              </p>
+            </div>
+            <div className="bg-amber-50 p-4 rounded-xl border border-amber-100">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-bold text-amber-800 uppercase tracking-wider">
+                  Pending
+                </span>
+                <FaClock className="text-amber-300" />
+              </div>
+              <p className="text-2xl font-black text-amber-600">
+                {propertiesList.filter((p) => p.status === "pending").length}
+              </p>
+            </div>
+            <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-bold text-gray-800 uppercase tracking-wider">
+                  Drafts
+                </span>
+                <FaBuilding className="text-gray-300" />
+              </div>
+              <p className="text-2xl font-black text-gray-600">
+                {propertiesList.filter((p) => p.status === "draft").length}
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+              All Listings
+              <span className="text-xs font-normal text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
+                {propertiesList.length}
+              </span>
+            </h3>
+            <div className="overflow-x-auto rounded-xl border border-gray-100">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-gray-50 text-gray-500 uppercase text-[10px] font-bold tracking-widest leading-normal">
+                    <th className="py-4 px-6">Title</th>
+                    <th className="py-4 px-6">Owner</th>
+                    <th className="py-4 px-6">Price</th>
+                    <th className="py-4 px-6">Status</th>
+                    <th className="py-4 px-6 text-right">Date</th>
+                  </tr>
+                </thead>
+                <tbody className="text-gray-600 text-sm">
+                  {propertiesList.map((property) => (
                     <tr
                       key={property._id}
-                      className="border-b border-gray-200 hover:bg-gray-50"
+                      className="border-b border-gray-50 hover:bg-gray-50 transition"
                     >
-                      <td className="py-3 px-6 whitespace-nowrap font-medium truncate max-w-xs">
+                      <td className="py-4 px-6 whitespace-nowrap font-semibold text-gray-800 truncate max-w-[200px]">
                         {property.title}
                       </td>
-                      <td className="py-3 px-6">
+                      <td className="py-4 px-6 text-gray-500">
                         {property.owner?.name || "Unknown"}
                       </td>
-                      <td className="py-3 px-6">
+                      <td className="py-4 px-6 font-medium text-gray-700">
                         ${property.price.toLocaleString()}
                       </td>
-                      <td className="py-3 px-6">
+                      <td className="py-4 px-6">
                         <span
-                          className={`py-1 px-3 rounded-full text-xs ${property.status === "published" ? "bg-green-200 text-green-600" : property.status === "draft" ? "bg-yellow-200 text-yellow-600" : "bg-red-200 text-red-600"}`}
+                          className={`py-1 px-3 rounded-lg text-[10px] font-bold uppercase tracking-wider ${property.status === "published" ? "bg-green-100 text-green-700" : property.status === "pending" ? "bg-amber-100 text-amber-700" : "bg-gray-100 text-gray-600"}`}
                         >
                           {property.status}
                         </span>
                       </td>
-                      <td className="py-3 px-6">
+                      <td className="py-4 px-6 text-gray-400 text-right">
                         {new Date(property.createdAt).toLocaleDateString()}
                       </td>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="5" className="text-center py-4">
-                      No properties found
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}
       {activeView === "pending" && (
-        <div>
-          <h3 className="text-xl font-bold mb-4">Pending Properties</h3>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
-                  <th className="py-3 px-6">Photo</th>
-                  <th className="py-3 px-6">Title</th>
-                  <th className="py-3 px-6">Owner</th>
-                  <th className="py-3 px-6">Price</th>
-                  <th className="py-3 px-6 text-center">Action</th>
-                </tr>
-              </thead>
-              <tbody className="text-gray-600 text-sm font-light">
-                {Array.isArray(propertiesList) &&
-                propertiesList.filter((p) => p.status === "pending").length >
-                  0 ? (
-                  propertiesList
-                    .filter((p) => p.status === "pending")
-                    .map((property) => (
-                      <tr
-                        key={property._id}
-                        onClick={() => navigate(`/property/${property._id}`)}
-                        className="border-b border-gray-200 hover:bg-blue-50 cursor-pointer transition"
-                      >
-                        <td className="py-3 px-6">
-                          <div className="w-16 h-12 bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
-                            {property.images?.[0] ? (
-                              <img
-                                src={property.images[0]}
-                                alt={property.title}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-400">
-                                No Image
-                              </div>
-                            )}
-                          </div>
-                        </td>
-                        <td className="py-3 px-6 whitespace-nowrap font-medium">
-                          {property.title}
-                        </td>
-                        <td className="py-3 px-6">
-                          {property.owner?.name || "Unknown"}
-                        </td>
-                        <td className="py-3 px-6">
-                          ${property.price.toLocaleString()}
-                        </td>
-                        <td className="py-3 px-6 text-center text-blue-600 font-medium">
-                          Review &rarr;
-                        </td>
-                      </tr>
-                    ))
-                ) : (
-                  <tr>
-                    <td colSpan="4" className="text-center py-4">
-                      No pending properties
-                    </td>
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-bold flex items-center gap-2">
+              Pending Approval Review
+              <span className="bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full font-bold">
+                {propertiesList.filter((p) => p.status === "pending").length}
+              </span>
+            </h3>
+          </div>
+          <div className="grid grid-cols-1 gap-4">
+            {propertiesList
+              .filter((p) => p.status === "pending")
+              .map((property) => (
+                <div
+                  key={property._id}
+                  className="bg-white border border-gray-100 rounded-2xl p-4 flex items-center justify-between hover:shadow-md transition group"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-20 h-16 bg-gray-100 rounded-xl overflow-hidden border border-gray-50">
+                      <img
+                        src={property.images?.[0] || "/placeholder.jpg"}
+                        alt={property.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-gray-800">
+                        {property.title}
+                      </h4>
+                      <p className="text-xs text-gray-400">
+                        by {property.owner?.name || "Unknown"} • $
+                        {property.price.toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleApprove(property._id)}
+                      className="bg-green-600 text-white p-2.5 rounded-xl hover:bg-green-700 transition shadow-sm"
+                      title="Approve"
+                    >
+                      <FaCheck size={14} />
+                    </button>
+                    <button
+                      onClick={() => handleReject(property._id)}
+                      className="bg-red-100 text-red-600 p-2.5 rounded-xl hover:bg-red-200 transition"
+                      title="Reject"
+                    >
+                      <FaTimes size={14} />
+                    </button>
+                    <Link
+                      to={`/property/${property._id}`}
+                      className="bg-blue-50 text-blue-600 p-2.5 rounded-xl hover:bg-blue-100 transition"
+                      title="View Details"
+                    >
+                      <FaSearch size={14} />
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            {propertiesList.filter((p) => p.status === "pending").length ===
+              0 && (
+              <div className="text-center py-12 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-100">
+                <FaClock className="w-12 h-12 mx-auto mb-3 text-gray-200" />
+                <p className="text-gray-400 font-medium">Review queue empty</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {activeView === "tours" && (
+        <div className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-amber-50 p-4 rounded-xl border border-amber-100">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-bold text-amber-800 uppercase tracking-wider">
+                  Pending
+                </span>
+                <FaClock className="text-amber-300" />
+              </div>
+              <p className="text-2xl font-black text-amber-600">
+                {toursList.filter((t) => t.status === "pending").length}
+              </p>
+            </div>
+            <div className="bg-green-50 p-4 rounded-xl border border-green-100">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-bold text-green-800 uppercase tracking-wider">
+                  Accepted
+                </span>
+                <FaCheck className="text-green-300" />
+              </div>
+              <p className="text-2xl font-black text-green-600">
+                {toursList.filter((t) => t.status === "accepted").length}
+              </p>
+            </div>
+            <div className="bg-red-50 p-4 rounded-xl border border-red-100">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-bold text-red-800 uppercase tracking-wider">
+                  Rejected
+                </span>
+                <FaTimes className="text-red-300" />
+              </div>
+              <p className="text-2xl font-black text-red-600">
+                {toursList.filter((t) => t.status === "rejected").length}
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+              Tour Monitoring
+              <span className="text-xs font-normal text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
+                {toursList.length}
+              </span>
+            </h3>
+            <div className="overflow-x-auto rounded-xl border border-gray-100">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-gray-50 text-gray-500 uppercase text-[10px] font-bold tracking-widest leading-normal">
+                    <th className="py-4 px-6">Property</th>
+                    <th className="py-4 px-6">User</th>
+                    <th className="py-4 px-6">Owner</th>
+                    <th className="py-4 px-6">Date/Time</th>
+                    <th className="py-4 px-6 text-right">Status</th>
                   </tr>
-                )}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="text-gray-600 text-sm">
+                  {toursList.map((tour) => (
+                    <tr
+                      key={tour._id}
+                      className="border-b border-gray-50 hover:bg-gray-50 transition"
+                    >
+                      <td className="py-4 px-6 whitespace-nowrap font-semibold text-gray-800 truncate max-w-[200px]">
+                        {tour.property?.title}
+                      </td>
+                      <td className="py-4 px-6 text-gray-500">
+                        {tour.user?.name}
+                      </td>
+                      <td className="py-4 px-6 text-gray-500">
+                        {tour.owner?.name}
+                      </td>
+                      <td className="py-4 px-6 text-gray-400 text-xs">
+                        {tour.date} @ {tour.time}
+                      </td>
+                      <td className="py-4 px-6 text-right">
+                        <span
+                          className={`py-1 px-3 rounded-lg text-[10px] font-bold uppercase tracking-wider ${tour.status === "accepted" ? "bg-green-100 text-green-700" : tour.status === "rejected" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}`}
+                        >
+                          {tour.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}

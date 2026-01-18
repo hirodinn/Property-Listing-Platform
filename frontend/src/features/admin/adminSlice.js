@@ -4,8 +4,11 @@ import adminService from "./adminService";
 const initialState = {
   usersCount: 0,
   propertiesCount: 0,
+  toursCount: 0,
+  pendingProperties: 0,
   usersList: [],
   propertiesList: [],
+  toursList: [],
   isLoading: false,
   isError: false,
   isSuccess: false,
@@ -73,6 +76,19 @@ export const disableProperty = createAsyncThunk(
   },
 );
 
+// Get All Tours
+export const getAllTours = createAsyncThunk(
+  "admin/getAllTours",
+  async (_, thunkAPI) => {
+    try {
+      return await adminService.getAllTours();
+    } catch (error) {
+      const message = responseErrorMessage(error);
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+
 export const adminSlice = createSlice({
   name: "admin",
   initialState,
@@ -96,6 +112,7 @@ export const adminSlice = createSlice({
         state.usersCount = action.payload.totalUsers;
         state.propertiesCount = action.payload.totalProperties;
         state.pendingProperties = action.payload.pendingProperties;
+        state.toursCount = action.payload.totalTours;
       })
       .addCase(getSystemMetrics.rejected, (state, action) => {
         state.isLoading = false;
@@ -115,6 +132,13 @@ export const adminSlice = createSlice({
       .addCase(getAllProperties.fulfilled, (state, action) => {
         state.isLoading = false;
         state.propertiesList = action.payload;
+      })
+      .addCase(getAllTours.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getAllTours.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.toursList = action.payload;
       })
       .addCase(disableProperty.fulfilled, (state, action) => {
         state.isLoading = false;

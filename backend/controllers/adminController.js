@@ -1,5 +1,6 @@
 import User from "../models/User.js";
 import Property from "../models/Property.js";
+import Tour from "../models/Tour.js";
 
 // @desc    Get system metrics (Admin)
 // @route   GET /api/admin/metrics
@@ -15,12 +16,15 @@ const getSystemMetrics = async (req, res) => {
     status: "pending",
   });
 
+  const totalTours = await Tour.countDocuments();
+
   res.json({
     totalUsers,
     totalProperties,
     publishedProperties,
     draftProperties,
     pendingProperties,
+    totalTours,
   });
 };
 

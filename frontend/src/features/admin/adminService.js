@@ -18,6 +18,12 @@ const getAllProperties = async () => {
   return response.data;
 };
 
+// Get all tours (Admin)
+const getAllTours = async () => {
+  const response = await axios.get(`${API_URL}/tours/all`);
+  return response.data;
+};
+
 // Disable property
 const disableProperty = async (id) => {
   const response = await axios.put(`${API_URL}/properties/${id}/disable`);
@@ -28,6 +34,7 @@ const adminService = {
   getSystemMetrics,
   getAllUsers,
   getAllProperties,
+  getAllTours,
   disableProperty,
 };
 
