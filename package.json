@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Premium Property Listing Platform",
   "scripts": {
-    "install-all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "install-all": "npm install && cd backend && npm install && cd ../frontend && npm install --include=dev",
     "build": "cd frontend && npm run build",
     "start": "cd backend && npm start",
     "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\""
