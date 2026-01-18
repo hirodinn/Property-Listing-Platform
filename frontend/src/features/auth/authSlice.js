@@ -1,8 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const vUrl = import.meta.env.VITE_API_URL;
-const API_URL = (vUrl && vUrl !== "/" ? vUrl : "/api") + "/auth";
+const API_URL = "/api/auth";
 axios.defaults.withCredentials = true;
 
 // Register User
