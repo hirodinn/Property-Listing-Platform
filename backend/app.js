@@ -60,7 +60,7 @@ if (process.env.NODE_ENV === "production") {
 
   app.use(express.static(frontendPath));
 
-  app.get("/:path*", (req, res) =>
+  app.get(/^(?!\/api).*/, (req, res) =>
     res.sendFile(path.resolve(frontendPath, "index.html")),
   );
 } else {
