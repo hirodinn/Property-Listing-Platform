@@ -1,9 +1,34 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { FaMapMarkerAlt, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  FaMapMarkerAlt,
+  FaChevronLeft,
+  FaChevronRight,
+  FaHeart,
+  FaRegHeart,
+} from "react-icons/fa";
+import { toggleFavorite } from "../features/auth/authSlice";
+import { toast } from "react-toastify";
 
 function PropertyItem({ property }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
+
+  const isFavorited = user?.favorites?.includes(property._id);
+
+  const handleToggleFavorite = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!user) {
+      toast.error("Please login to save favorites");
+      return;
+    }
+
+    dispatch(toggleFavorite(property._id));
+  };
 
   const nextImage = (e) => {
     e.preventDefault();
@@ -81,6 +106,23 @@ function PropertyItem({ property }) {
         <div className="absolute top-3 left-3 bg-[var(--color-accent)] text-white text-xs font-bold px-2 py-1 rounded z-10">
           {property.status === "published" ? "For Rent" : property.status}
         </div>
+
+        {/* Favorite Button - Restricted to normal users */}
+        {user?.role === "user" && (
+          <button
+            onClick={handleToggleFavorite}
+            className="absolute top-3 right-3 p-2 bg-white/20 hover:bg-white/40 rounded-full backdrop-blur-md transition z-20 group/fav"
+          >
+            {isFavorited ? (
+              <FaHeart className="text-red-500 scale-110" size={20} />
+            ) : (
+              <FaRegHeart
+                className="text-white group-hover/fav:scale-110 transition"
+                size={20}
+              />
+            )}
+          </button>
+        )}
       </div>
 
       <div className="p-4">

@@ -1,23 +1,74 @@
-import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { getFavorites } from "../../features/auth/authSlice";
+import PropertyItem from "../PropertyItem";
+import Spinner from "../Spinner";
 
 const UserDashboard = () => {
-  const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const { user, favoritesList, favoritesLoading } = useSelector(
+    (state) => state.auth,
+  );
+
+  useEffect(() => {
+    dispatch(getFavorites());
+  }, [dispatch]);
+
+  if (favoritesLoading) {
+    return <Spinner />;
+  }
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-4 text-[var(--color-primary)]">
-        Welcome, {user && user.name}
-      </h2>
-      <p className="text-[var(--color-text-muted)]">
-        This is your personal dashboard.
-      </p>
+    <div className="max-w-6xl mx-auto">
+      <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 mb-8">
+        <h2 className="text-3xl font-extrabold mb-2 text-[var(--color-primary)]">
+          Welcome back, {user && user.name.split(" ")[0]}!
+        </h2>
+        <p className="text-[var(--color-text-muted)] text-lg">
+          Manage your saved properties and tour requests here.
+        </p>
+      </div>
 
       <div className="mt-8">
-        <h3 className="text-xl font-semibold mb-4">My Favorites</h3>
-        <p className="text-gray-500 italic">
-          No favorite properties saved yet.
-        </p>
-        {/* List favorites here later */}
+        <h3 className="text-2xl font-bold mb-6 text-[var(--color-text-main)] flex items-center gap-2">
+          My Favorites
+          <span className="text-sm font-normal text-[var(--color-text-muted)] bg-gray-100 px-3 py-1 rounded-full">
+            {favoritesList.length} properties
+          </span>
+        </h3>
+
+        {favoritesList.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {favoritesList.map((property) => (
+              <PropertyItem key={property._id} property={property} />
+            ))}
+          </div>
+        ) : (
+          <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl p-12 text-center">
+            <div className="text-gray-400 mb-4 flex justify-center">
+              <svg
+                className="w-16 h-16"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                />
+              </svg>
+            </div>
+            <h4 className="text-xl font-bold text-gray-700 mb-2">
+              No favorites yet
+            </h4>
+            <p className="text-gray-500 max-w-sm mx-auto">
+              Properties you heart will appear here so you can find them again
+              easily.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -81,4 +81,50 @@ const getMe = async (req, res) => {
   res.status(200).json(user);
 };
 
-export { registerUser, loginUser, logoutUser, getMe };
+// @desc    Toggle favorite property
+// @route   POST /api/auth/favorites/:id
+// @access  Private
+const toggleFavorite = async (req, res) => {
+  const user = await User.findById(req.user._id);
+
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  const isFavorite = user.favorites.includes(req.params.id);
+
+  if (isFavorite) {
+    user.favorites = user.favorites.filter(
+      (id) => id.toString() !== req.params.id,
+    );
+  } else {
+    user.favorites.push(req.params.id);
+  }
+
+  await user.save();
+  res.status(200).json(user.favorites);
+};
+
+// @desc    Get favorite properties
+// @route   GET /api/auth/favorites
+// @access  Private
+const getFavorites = async (req, res) => {
+  const user = await User.findById(req.user._id).populate("favorites");
+
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  res.status(200).json(user.favorites);
+};
+
+export {
+  registerUser,
+  loginUser,
+  logoutUser,
+  getMe,
+  toggleFavorite,
+  getFavorites,
+};

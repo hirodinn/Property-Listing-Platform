@@ -66,11 +66,51 @@ export const getMe = createAsyncThunk("auth/me", async (_, thunkAPI) => {
   }
 });
 
+// Toggle Favorite
+export const toggleFavorite = createAsyncThunk(
+  "auth/toggleFavorite",
+  async (id, thunkAPI) => {
+    try {
+      const response = await axios.post(`${API_URL}/favorites/${id}`);
+      return response.data; // Array of favorite IDs
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+
+// Get Favorites
+export const getFavorites = createAsyncThunk(
+  "auth/getFavorites",
+  async (_, thunkAPI) => {
+    try {
+      const response = await axios.get(`${API_URL}/favorites`);
+      return response.data; // Array of populated property objects
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+
 const initialState = {
   user: null, // If null, not logged in
+  favoritesList: [], // Populated favorite properties
   isError: false,
   isSuccess: false,
   isLoading: false,
+  favoritesLoading: false, // Separate loading for favorites to prevent dashboard re-mount loops
   message: "",
 };
 
@@ -132,6 +172,26 @@ export const authSlice = createSlice({
       .addCase(getMe.rejected, (state) => {
         state.isLoading = false;
         state.user = null;
+      })
+      // Toggle Favorite
+      .addCase(toggleFavorite.fulfilled, (state, action) => {
+        if (state.user) {
+          state.user.favorites = action.payload;
+        }
+      })
+      // Get Favorites
+      .addCase(getFavorites.pending, (state) => {
+        state.favoritesLoading = true;
+      })
+      .addCase(getFavorites.fulfilled, (state, action) => {
+        state.favoritesLoading = false;
+        state.isSuccess = true;
+        state.favoritesList = action.payload;
+      })
+      .addCase(getFavorites.rejected, (state, action) => {
+        state.favoritesLoading = false;
+        state.isError = true;
+        state.message = action.payload;
       });
   },
 });

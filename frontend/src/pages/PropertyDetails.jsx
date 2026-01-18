@@ -8,12 +8,15 @@ import {
   FaCalendarAlt,
   FaCheck,
   FaTimes,
+  FaHeart,
+  FaRegHeart,
 } from "react-icons/fa";
 import { toast } from "react-toastify";
 import {
   approveProperty,
   rejectProperty,
 } from "../features/properties/propertySlice";
+import { toggleFavorite } from "../features/auth/authSlice";
 
 function PropertyDetails() {
   const { id } = useParams();
@@ -59,6 +62,16 @@ function PropertyDetails() {
         toast.error(err || "Failed to reject property");
       }
     }
+  };
+
+  const isFavorited = user?.favorites?.includes(id);
+
+  const handleToggleFavorite = () => {
+    if (!user) {
+      toast.error("Please login to save favorites");
+      return;
+    }
+    dispatch(toggleFavorite(id));
   };
 
   if (isLoading || !property) {
@@ -212,6 +225,28 @@ function PropertyDetails() {
               ) : (
                 <button className="w-full bg-[var(--color-primary)] text-white py-3 rounded-lg font-bold hover:bg-opacity-90 transition">
                   Request a Tour
+                </button>
+              )}
+
+              {/* Favorites Action - Restricted to normal users */}
+              {user?.role === "user" && (
+                <button
+                  onClick={handleToggleFavorite}
+                  className={`w-full mt-3 py-3 rounded-lg font-bold border-2 transition flex items-center justify-center gap-2 ${
+                    isFavorited
+                      ? "border-red-500 text-red-500 hover:bg-red-50"
+                      : "border-gray-200 text-[var(--color-text-main)] hover:bg-gray-50"
+                  }`}
+                >
+                  {isFavorited ? (
+                    <>
+                      <FaHeart /> Saved to Favorites
+                    </>
+                  ) : (
+                    <>
+                      <FaRegHeart /> Save to Favorites
+                    </>
+                  )}
                 </button>
               )}
 
