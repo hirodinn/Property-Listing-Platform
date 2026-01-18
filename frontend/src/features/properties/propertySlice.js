@@ -32,6 +32,19 @@ export const createProperty = createAsyncThunk(
   },
 );
 
+// Update property
+export const updateProperty = createAsyncThunk(
+  "properties/update",
+  async ({ id, propertyData }, thunkAPI) => {
+    try {
+      return await propertyService.updateProperty(id, propertyData);
+    } catch (error) {
+      const message = responseErrorMessage(error);
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+
 // Get properties
 export const getProperties = createAsyncThunk(
   "properties/getAll",
@@ -145,6 +158,24 @@ export const propertySlice = createSlice({
         state.properties.push(action.payload);
       })
       .addCase(createProperty.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(updateProperty.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateProperty.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        const index = state.properties.findIndex(
+          (p) => p._id === action.payload._id,
+        );
+        if (index !== -1) {
+          state.properties[index] = action.payload;
+        }
+      })
+      .addCase(updateProperty.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;

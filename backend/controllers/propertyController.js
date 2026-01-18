@@ -219,6 +219,60 @@ const rejectProperty = async (req, res) => {
   }
 };
 
+// @desc    Update property (Draft)
+// @route   PUT /api/properties/:id
+// @access  Owner
+const updateProperty = async (req, res, next) => {
+  try {
+    const { title, description, location, price } = req.body;
+    const property = await Property.findById(req.params.id);
+
+    if (!property) {
+      res.status(404);
+      throw new Error("Property not found");
+    }
+
+    // Check ownership
+    if (property.owner.toString() !== req.user._id.toString()) {
+      res.status(403);
+      throw new Error("Not authorized to update this property");
+    }
+
+    // Update fields if provided
+    if (title) property.title = title;
+    if (description) property.description = description;
+    if (location) property.location = location;
+    if (price) property.price = Number(price);
+
+    // Handle new images
+    if (req.files && req.files.length > 0) {
+      for (const file of req.files) {
+        const result = await new Promise((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            {
+              folder: "properties",
+              resource_type: "image",
+              transformation: [{ quality: "auto", fetch_format: "auto" }],
+            },
+            (error, result) => {
+              if (error) return reject(error);
+              resolve(result);
+            },
+          );
+          uploadStream.end(file.buffer);
+        });
+        property.images.push(result.secure_url);
+      }
+    }
+
+    const updatedProperty = await property.save();
+    res.json(updatedProperty);
+  } catch (error) {
+    res.status(400);
+    next(error);
+  }
+};
+
 export {
   createProperty,
   publishProperty,
@@ -228,4 +282,5 @@ export {
   getPropertyById,
   approveProperty,
   rejectProperty,
+  updateProperty,
 };

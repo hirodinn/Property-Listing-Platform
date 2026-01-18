@@ -17,6 +17,15 @@ const createProperty = async (propertyData) => {
   return response.data;
 };
 
+// Update property
+const updateProperty = async (propertyId, propertyData) => {
+  const response = await axiosInstance.put(
+    `/properties/${propertyId}`,
+    propertyData,
+  );
+  return response.data;
+};
+
 // Get all properties
 const getProperties = async (params) => {
   const response = await axios.get(API_URL, { params }); // Public route, no need for credentials usually unless tracking?
@@ -61,6 +70,7 @@ const rejectProperty = async (propertyId) => {
 
 const propertyService = {
   createProperty,
+  updateProperty,
   getProperties,
   getProperty,
   getMyProperties,

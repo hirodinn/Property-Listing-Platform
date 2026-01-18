@@ -45,6 +45,7 @@ const OwnerDashboard = () => {
   const tours = Array.isArray(tourRequests) ? tourRequests : [];
 
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [editProperty, setEditProperty] = useState(null);
   const [activeView, setActiveView] = useState("overview"); // overview, drafts, pending, posted, tours
 
   useEffect(() => {
@@ -75,6 +76,7 @@ const OwnerDashboard = () => {
 
   const handleCreateSuccess = () => {
     setShowCreateForm(false);
+    setEditProperty(null);
     // The propertySlice should already handle adding the new property to the state,
     // but if not, we might need to re-fetch or rely on the store update.
     // Based on slice logic: state.properties.push(action.payload) is there.
@@ -134,12 +136,24 @@ const OwnerDashboard = () => {
         </Link>
 
         {property.status === "draft" && (
-          <button
-            onClick={() => handlePublish(property._id)}
-            className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 font-medium text-sm"
-          >
-            <FaUpload /> Publish
-          </button>
+          <>
+            <button
+              onClick={() => {
+                setEditProperty(property);
+                setShowCreateForm(true);
+                setActiveView("drafts");
+              }}
+              className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-yellow-50 text-yellow-600 rounded-lg hover:bg-yellow-100 font-medium text-sm"
+            >
+              <FaPen /> Edit
+            </button>
+            <button
+              onClick={() => handlePublish(property._id)}
+              className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 font-medium text-sm"
+            >
+              <FaUpload /> Publish
+            </button>
+          </>
         )}
 
         <button
@@ -171,6 +185,7 @@ const OwnerDashboard = () => {
               onClick={() => {
                 setActiveView("overview");
                 setShowCreateForm(false);
+                setEditProperty(null);
               }}
               className="flex items-center gap-2 text-gray-600 hover:text-(--color-primary) font-medium transition"
             >
@@ -271,7 +286,11 @@ const OwnerDashboard = () => {
         <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 mb-8">
           <CreatePropertyForm
             onSuccess={handleCreateSuccess}
-            onCancel={() => setShowCreateForm(false)}
+            onCancel={() => {
+              setShowCreateForm(false);
+              setEditProperty(null);
+            }}
+            initialData={editProperty}
           />
         </div>
       )}

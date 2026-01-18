@@ -8,6 +8,7 @@ import {
   getPropertyById,
   approveProperty,
   rejectProperty,
+  updateProperty,
 } from "../controllers/propertyController.js";
 import { protect, authorize } from "../middleware/authMiddleware.js";
 import upload from "../utils/upload.js";
@@ -21,7 +22,11 @@ router
 
 router.get("/my", protect, authorize("owner"), getMyProperties);
 
-router.route("/:id").get(getPropertyById).delete(protect, deleteProperty); // Logic inside controller handles owner/admin check
+router
+  .route("/:id")
+  .get(getPropertyById)
+  .delete(protect, deleteProperty)
+  .put(protect, authorize("owner"), upload.array("images"), updateProperty);
 
 router.put("/:id/publish", protect, authorize("owner"), publishProperty);
 router.put("/:id/approve", protect, authorize("admin"), approveProperty);

@@ -1,16 +1,20 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createProperty, reset } from "../../features/properties/propertySlice";
+import {
+  createProperty,
+  updateProperty,
+  reset,
+} from "../../features/properties/propertySlice";
 import Spinner from "../Spinner";
 import { toast } from "react-toastify";
 import { FaTimes } from "react-icons/fa";
 
-const CreatePropertyForm = ({ onSuccess, onCancel }) => {
+const CreatePropertyForm = ({ onSuccess, onCancel, initialData }) => {
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    location: "",
-    price: "",
+    title: initialData?.title || "",
+    description: initialData?.description || "",
+    location: initialData?.location || "",
+    price: initialData?.price || "",
   });
   const [images, setImages] = useState([]);
 
@@ -31,7 +35,11 @@ const CreatePropertyForm = ({ onSuccess, onCancel }) => {
     }
 
     if (isSuccess) {
-      toast.success("Draft created successfully!");
+      toast.success(
+        initialData
+          ? "Draft updated successfully!"
+          : "Draft created successfully!",
+      );
       onSuccess(); // Callback to parent to close form or refresh list
       dispatch(reset());
     }
@@ -63,7 +71,11 @@ const CreatePropertyForm = ({ onSuccess, onCancel }) => {
 
     console.log("propertyData", propertyData);
 
-    dispatch(createProperty(propertyData));
+    if (initialData) {
+      dispatch(updateProperty({ id: initialData._id, propertyData }));
+    } else {
+      dispatch(createProperty(propertyData));
+    }
   };
 
   if (isLoading) return <Spinner />;
@@ -78,7 +90,7 @@ const CreatePropertyForm = ({ onSuccess, onCancel }) => {
       </button>
 
       <h3 className="text-xl font-bold mb-4 text-(--color-primary)">
-        Start a New Draft
+        {initialData ? "Edit Draft" : "Start a New Draft"}
       </h3>
 
       <form onSubmit={onSubmit}>
@@ -146,7 +158,7 @@ const CreatePropertyForm = ({ onSuccess, onCancel }) => {
 
         <div className="mb-6">
           <label className="block text-sm font-semibold mb-1" htmlFor="images">
-            Images * (Max 6)
+            {initialData ? "Add More Images (Optional)" : "Images * (Max 6)"}
           </label>
           <input
             type="file"
@@ -156,7 +168,7 @@ const CreatePropertyForm = ({ onSuccess, onCancel }) => {
             max="6"
             accept=".jpg,.png,.jpeg"
             multiple
-            required
+            required={!initialData} // Not required if editing (already has images)
           />
         </div>
 
@@ -172,7 +184,7 @@ const CreatePropertyForm = ({ onSuccess, onCancel }) => {
             type="submit"
             className="bg-(--color-primary) text-white px-6 py-2 rounded-lg font-bold hover:bg-opacity-90 transition"
           >
-            Create Draft
+            {initialData ? "Update Draft" : "Create Draft"}
           </button>
         </div>
       </form>
