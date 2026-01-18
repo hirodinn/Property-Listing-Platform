@@ -83,6 +83,7 @@ export const getProperty = createAsyncThunk(
     }
   },
 );
+
 // Delete property
 export const deleteProperty = createAsyncThunk(
   "properties/delete",
@@ -90,6 +91,19 @@ export const deleteProperty = createAsyncThunk(
     try {
       await propertyService.deleteProperty(id);
       return id;
+    } catch (error) {
+      const message = responseErrorMessage(error);
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+
+// Archive property
+export const archiveProperty = createAsyncThunk(
+  "properties/archive",
+  async (id, thunkAPI) => {
+    try {
+      return await propertyService.archiveProperty(id);
     } catch (error) {
       const message = responseErrorMessage(error);
       return thunkAPI.rejectWithValue(message);
@@ -221,6 +235,16 @@ export const propertySlice = createSlice({
         state.properties = state.properties.filter(
           (property) => property._id !== action.payload,
         );
+      })
+      .addCase(archiveProperty.fulfilled, (state, action) => {
+        state.isLoading = false;
+        // Update the property in the list instead of removing it
+        const index = state.properties.findIndex(
+          (p) => p._id === action.payload.property._id,
+        );
+        if (index !== -1) {
+          state.properties[index] = action.payload.property;
+        }
       })
       .addCase(publishProperty.fulfilled, (state, action) => {
         state.isLoading = false;

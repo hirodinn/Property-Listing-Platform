@@ -24,6 +24,7 @@ const getSystemMetrics = async (req, res) => {
     publishedProperties,
     draftProperties,
     pendingProperties,
+    archivedProperties: await Property.countDocuments({ status: "archived" }),
     totalTours,
   });
 };

@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import {
   getMyProperties,
+  archiveProperty,
   deleteProperty,
   publishProperty,
   reset as propertiesReset,
@@ -27,6 +28,7 @@ import {
   FaTimes,
   FaMapMarkerAlt,
   FaEnvelope,
+  FaArchive,
 } from "react-icons/fa";
 import CreatePropertyForm from "./CreatePropertyForm";
 
@@ -57,6 +59,12 @@ const OwnerDashboard = () => {
       dispatch(toursReset());
     };
   }, [dispatch]);
+
+  const handleArchive = (id) => {
+    if (window.confirm("Are you sure you want to archive this property?")) {
+      dispatch(archiveProperty(id));
+    }
+  };
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this property?")) {
@@ -97,6 +105,7 @@ const OwnerDashboard = () => {
   const drafts = properties.filter((p) => p.status === "draft");
   const pending = properties.filter((p) => p.status === "pending");
   const published = properties.filter((p) => p.status === "published");
+  const archived = properties.filter((p) => p.status === "archived");
 
   const PropertyCard = ({ property }) => (
     <div className="bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition p-4 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
@@ -153,15 +162,23 @@ const OwnerDashboard = () => {
             >
               <FaUpload /> Publish
             </button>
+            <button
+              onClick={() => handleDelete(property._id)}
+              className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 font-medium text-sm"
+            >
+              <FaTrash /> Delete
+            </button>
           </>
         )}
 
-        <button
-          onClick={() => handleDelete(property._id)}
-          className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 font-medium text-sm"
-        >
-          <FaTrash /> Delete
-        </button>
+        {property.status === "published" && (
+          <button
+            onClick={() => handleArchive(property._id)}
+            className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 font-medium text-sm"
+          >
+            <FaArchive /> Archive
+          </button>
+        )}
       </div>
     </div>
   );
@@ -263,6 +280,23 @@ const OwnerDashboard = () => {
             </p>
           </div>
 
+          {/* Archived Card */}
+          <div
+            onClick={() => setActiveView("archived")}
+            className="bg-red-50 p-6 rounded-2xl border border-red-100 cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1 group"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-lg font-bold text-red-800">Archived</h3>
+              <FaArchive className="text-2xl text-red-300 group-hover:text-red-500 transition" />
+            </div>
+            <p className="text-4xl font-black text-red-600">
+              {archived.length}
+            </p>
+            <p className="text-xs text-red-400 mt-2 font-medium">
+              Archived listings &rarr;
+            </p>
+          </div>
+
           {/* Tours Card */}
           <div
             onClick={() => setActiveView("tours")}
@@ -353,6 +387,27 @@ const OwnerDashboard = () => {
             {published.length === 0 && (
               <p className="text-gray-400 bg-gray-50 p-8 rounded-xl border border-dashed text-center">
                 No posted properties yet.
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {activeView === "archived" && (
+        <div>
+          <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
+            Archived Properties
+            <span className="text-sm font-normal text-red-400 bg-red-50 px-3 py-1 rounded-full border border-red-100">
+              {archived.length}
+            </span>
+          </h3>
+          <div className="space-y-4">
+            {archived.map((p) => (
+              <PropertyCard key={p._id} property={p} />
+            ))}
+            {archived.length === 0 && (
+              <p className="text-gray-400 bg-gray-50 p-8 rounded-xl border border-dashed text-center">
+                No archived properties.
               </p>
             )}
           </div>

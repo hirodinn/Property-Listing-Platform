@@ -21,7 +21,7 @@ import {
   FaUserShield,
   FaUserTie,
   FaUser,
-  FaTrash,
+  FaArchive,
 } from "react-icons/fa";
 import {
   approveProperty,
@@ -298,12 +298,15 @@ const AdminDashboard = () => {
             <div className="bg-red-50 p-4 rounded-xl border border-red-100">
               <div className="flex items-center justify-between mb-1">
                 <span className="text-xs font-bold text-red-800 uppercase tracking-wider">
-                  Deleted
+                  Archived
                 </span>
-                <FaTrash className="text-red-300" />
+                <FaArchive className="text-red-300" />
               </div>
               <p className="text-2xl font-black text-red-600">
-                {propertiesList.filter((p) => p.deletedAt).length}
+                {
+                  propertiesList.filter((p) => p.status === "archived").length
+                  /* Or use p.archived if available, but status is better */
+                }
               </p>
             </div>
             <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
@@ -359,7 +362,7 @@ const AdminDashboard = () => {
                       <td className="py-4 px-6">
                         <span
                           className={`py-1 px-3 rounded-lg text-[10px] font-bold uppercase tracking-wider ${
-                            property.deletedAt
+                            property.status === "archived"
                               ? "bg-red-100 text-red-700"
                               : property.status === "published"
                                 ? "bg-green-100 text-green-700"
@@ -368,7 +371,7 @@ const AdminDashboard = () => {
                                   : "bg-gray-100 text-gray-600"
                           }`}
                         >
-                          {property.deletedAt ? "Deleted" : property.status}
+                          {property.status}
                         </span>
                       </td>
                       <td className="py-4 px-6 text-gray-400 text-right">

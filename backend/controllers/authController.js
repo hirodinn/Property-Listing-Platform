@@ -111,7 +111,10 @@ const toggleFavorite = async (req, res) => {
 // @route   GET /api/auth/favorites
 // @access  Private
 const getFavorites = async (req, res) => {
-  const user = await User.findById(req.user._id).populate("favorites");
+  const user = await User.findById(req.user._id).populate({
+    path: "favorites",
+    match: { status: "published" },
+  });
 
   if (!user) {
     res.status(404);

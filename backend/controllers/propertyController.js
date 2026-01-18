@@ -124,7 +124,7 @@ const getMyProperties = async (req, res) => {
   res.json(properties);
 };
 
-// @desc    Soft Delete Property
+// @desc    Soft Delete Property (Drafts/Archived)
 // @route   DELETE /api/properties/:id
 // @access  Owner/Admin
 const deleteProperty = async (req, res) => {
@@ -144,10 +144,52 @@ const deleteProperty = async (req, res) => {
     throw new Error("Not authorized");
   }
 
+  // If published, should be archived instead (or maybe admin can force delete?)
+  // User said "delete for the drafts".
+  // Let's restrict: can only delete if status is NOT published.
+  if (property.status === "published" && req.user.role !== "admin") {
+    res.status(400);
+    throw new Error(
+      "Published properties cannot be deleted. Archive them instead.",
+    );
+  }
+
   property.deletedAt = new Date();
   await property.save();
 
-  res.json({ message: "Property removed" });
+  res.json({ message: "Property removed", id: req.params.id });
+};
+
+// @desc    Archive Property
+// @route   PUT /api/properties/:id/archive
+// @access  Owner/Admin
+const archiveProperty = async (req, res) => {
+  const property = await Property.findById(req.params.id);
+
+  if (!property) {
+    res.status(404);
+    throw new Error("Property not found");
+  }
+
+  // Check ownership or admin
+  if (
+    property.owner.toString() !== req.user._id.toString() &&
+    req.user.role !== "admin"
+  ) {
+    res.status(403);
+    throw new Error("Not authorized");
+  }
+
+  // Only published properties can be archived
+  if (property.status !== "published") {
+    res.status(400);
+    throw new Error("Only published properties can be archived");
+  }
+
+  property.status = "archived";
+  await property.save();
+
+  res.json({ message: "Property archived", property });
 };
 
 // @desc    Get single property
@@ -331,6 +373,7 @@ export {
   getProperties,
   getMyProperties,
   deleteProperty,
+  archiveProperty,
   getPropertyById,
   approveProperty,
   rejectProperty,

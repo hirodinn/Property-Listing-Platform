@@ -50,6 +50,12 @@ const deleteProperty = async (propertyId) => {
   return response.data;
 };
 
+// Archive property
+const archiveProperty = async (propertyId) => {
+  const response = await axiosInstance.put(`/properties/${propertyId}/archive`);
+  return response.data;
+};
+
 // Publish property
 const publishProperty = async (propertyId) => {
   const response = await axiosInstance.put(`/properties/${propertyId}/publish`);
@@ -75,6 +81,7 @@ const propertyService = {
   getProperty,
   getMyProperties,
   deleteProperty,
+  archiveProperty,
   publishProperty,
   approveProperty,
   rejectProperty,

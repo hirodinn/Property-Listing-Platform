@@ -5,6 +5,7 @@ import {
   getProperties,
   getMyProperties,
   deleteProperty,
+  archiveProperty,
   getPropertyById,
   approveProperty,
   rejectProperty,
@@ -27,6 +28,8 @@ router
   .get(getPropertyById)
   .delete(protect, deleteProperty)
   .put(protect, authorize("owner"), upload.array("images"), updateProperty);
+
+router.put("/:id/archive", protect, archiveProperty);
 
 router.put("/:id/publish", protect, authorize("owner"), publishProperty);
 router.put("/:id/approve", protect, authorize("admin"), approveProperty);
