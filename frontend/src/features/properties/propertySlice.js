@@ -154,7 +154,6 @@ export const propertySlice = createSlice({
       })
       .addCase(getProperties.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.isSuccess = true;
         state.properties = action.payload.properties;
       })
       .addCase(getProperties.rejected, (state, action) => {
@@ -167,7 +166,6 @@ export const propertySlice = createSlice({
       })
       .addCase(getProperty.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.isSuccess = true;
         state.property = action.payload;
       })
       .addCase(getProperty.rejected, (state, action) => {
@@ -180,7 +178,6 @@ export const propertySlice = createSlice({
       })
       .addCase(getMyProperties.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.isSuccess = true;
         state.properties = action.payload;
       })
       .addCase(getMyProperties.rejected, (state, action) => {
@@ -190,14 +187,12 @@ export const propertySlice = createSlice({
       })
       .addCase(deleteProperty.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.isSuccess = true;
         state.properties = state.properties.filter(
           (property) => property._id !== action.payload,
         );
       })
       .addCase(publishProperty.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.isSuccess = true;
         const index = state.properties.findIndex(
           (p) => p._id === action.payload._id,
         );
@@ -207,7 +202,6 @@ export const propertySlice = createSlice({
       })
       .addCase(approveProperty.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.isSuccess = true;
         const index = state.properties.findIndex(
           (p) => p._id === action.payload._id,
         );
@@ -217,7 +211,6 @@ export const propertySlice = createSlice({
       })
       .addCase(rejectProperty.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.isSuccess = true;
         const index = state.properties.findIndex(
           (p) => p._id === action.payload._id,
         );
