@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API_URL = (import.meta.env.VITE_API_URL || "/api") + "/auth";
+const vUrl = import.meta.env.VITE_API_URL;
+const API_URL = (vUrl && vUrl !== "/" ? vUrl : "/api") + "/auth";
 axios.defaults.withCredentials = true;
 
 // Register User
@@ -10,6 +11,17 @@ export const register = createAsyncThunk(
   async (userData, thunkAPI) => {
     try {
       const response = await axios.post(`${API_URL}/register`, userData);
+
+      // Safety check for HTML responses
+      if (
+        typeof response.data === "string" &&
+        response.data.includes("<!doctype html>")
+      ) {
+        return thunkAPI.rejectWithValue(
+          "Invalid server response (HTML instead of JSON)",
+        );
+      }
+
       return response.data;
     } catch (error) {
       const message =
@@ -29,6 +41,17 @@ export const login = createAsyncThunk(
   async (userData, thunkAPI) => {
     try {
       const response = await axios.post(`${API_URL}/login`, userData);
+
+      // Safety check for HTML responses
+      if (
+        typeof response.data === "string" &&
+        response.data.includes("<!doctype html>")
+      ) {
+        return thunkAPI.rejectWithValue(
+          "Invalid server response (HTML instead of JSON)",
+        );
+      }
+
       return response.data;
     } catch (error) {
       const message =

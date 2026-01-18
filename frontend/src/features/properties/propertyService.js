@@ -1,7 +1,8 @@
 import axios from "axios";
 
-const BASE_URL = import.meta.env.VITE_API_URL || "/api";
-const API_URL = `${BASE_URL}/properties`;
+const vUrl = import.meta.env.VITE_API_URL;
+const API_URL = (vUrl && vUrl !== "/" ? vUrl : "/api") + "/properties";
+const BASE_URL = vUrl && vUrl !== "/" ? vUrl : "/api";
 
 // Axios instance with credentials enabled for cookies
 const axiosInstance = axios.create({
