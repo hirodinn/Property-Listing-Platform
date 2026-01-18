@@ -1,3 +1,5 @@
+import path from "path";
+import { fileURLToPath } from "url";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -14,9 +16,22 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(helmet());
+
+// CORS configuration
+const allowedOrigins = [
+  "http://localhost:5173",
+  process.env.FRONTEND_URL, // Add frontend URL from env
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: "http://localhost:5173", // Vite default port
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   }),
 );
@@ -27,9 +42,22 @@ app.use("/api/properties", propertyRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/tours", tourRoutes);
 
-app.get("/", (req, res) => {
-  res.send("API is running...");
-});
+// Serve Frontend in Production
+if (process.env.NODE_ENV === "production") {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  const frontendPath = path.join(__dirname, "../frontend/dist");
+
+  app.use(express.static(frontendPath));
+
+  app.get("*", (req, res) =>
+    res.sendFile(path.resolve(frontendPath, "index.html")),
+  );
+} else {
+  app.get("/", (req, res) => {
+    res.send("API is running...");
+  });
+}
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {
