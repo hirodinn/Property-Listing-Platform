@@ -51,7 +51,9 @@ const disableProperty = async (req, res) => {
 const getAllPropertiesAdmin = async (req, res) => {
   // Admin sees everything, including soft deleted or drafts, maybe?
   // For now, let's show all valid docs (including drafts/archived)
-  const properties = await Property.find({}).populate("owner", "name email");
+  const properties = await Property.find({})
+    .setOptions({ includeDeleted: true })
+    .populate("owner", "name email");
   res.json(properties);
 };
 

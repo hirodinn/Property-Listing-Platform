@@ -21,6 +21,7 @@ import {
   FaUserShield,
   FaUserTie,
   FaUser,
+  FaTrash,
 } from "react-icons/fa";
 import {
   approveProperty,
@@ -287,18 +288,22 @@ const AdminDashboard = () => {
                 <FaCheck className="text-green-300" />
               </div>
               <p className="text-2xl font-black text-green-600">
-                {propertiesList.filter((p) => p.status === "published").length}
+                {
+                  propertiesList.filter(
+                    (p) => p.status === "published" && !p.deletedAt,
+                  ).length
+                }
               </p>
             </div>
-            <div className="bg-amber-50 p-4 rounded-xl border border-amber-100">
+            <div className="bg-red-50 p-4 rounded-xl border border-red-100">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-bold text-amber-800 uppercase tracking-wider">
-                  Pending
+                <span className="text-xs font-bold text-red-800 uppercase tracking-wider">
+                  Deleted
                 </span>
-                <FaClock className="text-amber-300" />
+                <FaTrash className="text-red-300" />
               </div>
-              <p className="text-2xl font-black text-amber-600">
-                {propertiesList.filter((p) => p.status === "pending").length}
+              <p className="text-2xl font-black text-red-600">
+                {propertiesList.filter((p) => p.deletedAt).length}
               </p>
             </div>
             <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
@@ -309,7 +314,11 @@ const AdminDashboard = () => {
                 <FaBuilding className="text-gray-300" />
               </div>
               <p className="text-2xl font-black text-gray-600">
-                {propertiesList.filter((p) => p.status === "draft").length}
+                {
+                  propertiesList.filter(
+                    (p) => p.status === "draft" && !p.deletedAt,
+                  ).length
+                }
               </p>
             </div>
           </div>
@@ -349,9 +358,17 @@ const AdminDashboard = () => {
                       </td>
                       <td className="py-4 px-6">
                         <span
-                          className={`py-1 px-3 rounded-lg text-[10px] font-bold uppercase tracking-wider ${property.status === "published" ? "bg-green-100 text-green-700" : property.status === "pending" ? "bg-amber-100 text-amber-700" : "bg-gray-100 text-gray-600"}`}
+                          className={`py-1 px-3 rounded-lg text-[10px] font-bold uppercase tracking-wider ${
+                            property.deletedAt
+                              ? "bg-red-100 text-red-700"
+                              : property.status === "published"
+                                ? "bg-green-100 text-green-700"
+                                : property.status === "pending"
+                                  ? "bg-amber-100 text-amber-700"
+                                  : "bg-gray-100 text-gray-600"
+                          }`}
                         >
-                          {property.status}
+                          {property.deletedAt ? "Deleted" : property.status}
                         </span>
                       </td>
                       <td className="py-4 px-6 text-gray-400 text-right">
