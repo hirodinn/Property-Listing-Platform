@@ -39,7 +39,6 @@ const createProperty = async (req, res, next) => {
       price: Number(price),
       images: imageUrls,
       owner: req.user._id,
-      status: "pending",
     });
 
     res.status(201).json(property);

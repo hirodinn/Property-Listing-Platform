@@ -45,7 +45,7 @@ const OwnerDashboard = () => {
   const tours = Array.isArray(tourRequests) ? tourRequests : [];
 
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [activeView, setActiveView] = useState("overview"); // overview, properties, tours
+  const [activeView, setActiveView] = useState("overview"); // overview, drafts, pending, posted, tours
 
   useEffect(() => {
     dispatch(getMyProperties());
@@ -180,7 +180,7 @@ const OwnerDashboard = () => {
           {!showCreateForm && (
             <button
               onClick={() => {
-                setActiveView("properties");
+                setActiveView("drafts"); // Default to drafts when creating? Or maybe just keep it simple.
                 setShowCreateForm(true);
               }}
               className="flex items-center gap-2 bg-(--color-primary) text-white px-5 py-2.5 rounded-lg hover:bg-opacity-90 transition font-medium shadow-md text-sm"
@@ -198,115 +198,143 @@ const OwnerDashboard = () => {
       )}
 
       {activeView === "overview" && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Properties Card */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Drafts Card */}
           <div
-            onClick={() => setActiveView("properties")}
-            className="bg-blue-50 p-8 rounded-2xl border border-blue-100 cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1 group"
+            onClick={() => setActiveView("drafts")}
+            className="bg-gray-50 p-6 rounded-2xl border border-gray-100 cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1 group"
           >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-blue-800">My Properties</h3>
-              <FaBuilding className="text-3xl text-blue-300 group-hover:text-blue-500 transition" />
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-lg font-bold text-gray-800">My Drafts</h3>
+              <FaPen className="text-2xl text-gray-300 group-hover:text-gray-500 transition" />
             </div>
-            <p className="text-5xl font-black text-blue-600">
-              {published.length}
-            </p>
-            <p className="text-sm text-blue-400 mt-4 font-medium">
-              View all listings &rarr;
+            <p className="text-4xl font-black text-gray-600">{drafts.length}</p>
+            <p className="text-xs text-gray-400 mt-2 font-medium">
+              Finish listing &rarr;
             </p>
           </div>
 
           {/* Pending Card */}
           <div
-            onClick={() => setActiveView("properties")}
-            className="bg-yellow-50 p-8 rounded-2xl border border-yellow-100 cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1 group"
+            onClick={() => setActiveView("pending")}
+            className="bg-amber-50 p-6 rounded-2xl border border-amber-100 cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1 group"
           >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-yellow-800">In Review</h3>
-              <FaClock className="text-3xl text-yellow-300 group-hover:text-yellow-500 transition" />
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-lg font-bold text-amber-800">Pending</h3>
+              <FaClock className="text-2xl text-amber-300 group-hover:text-amber-500 transition" />
             </div>
-            <p className="text-5xl font-black text-yellow-600">
-              {pending.length + drafts.length}
+            <p className="text-4xl font-black text-amber-600">
+              {pending.length}
             </p>
-            <p className="text-sm text-yellow-400 mt-4 font-medium">
-              Pending & drafts &rarr;
+            <p className="text-xs text-amber-400 mt-2 font-medium">
+              Awaiting review &rarr;
+            </p>
+          </div>
+
+          {/* Posted Card */}
+          <div
+            onClick={() => setActiveView("posted")}
+            className="bg-blue-50 p-6 rounded-2xl border border-blue-100 cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1 group"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-lg font-bold text-blue-800">Posted</h3>
+              <FaBuilding className="text-2xl text-blue-300 group-hover:text-blue-500 transition" />
+            </div>
+            <p className="text-4xl font-black text-blue-600">
+              {published.length}
+            </p>
+            <p className="text-xs text-blue-400 mt-2 font-medium">
+              Live listings &rarr;
             </p>
           </div>
 
           {/* Tours Card */}
           <div
             onClick={() => setActiveView("tours")}
-            className="bg-green-50 p-8 rounded-2xl border border-green-100 cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1 group"
+            className="bg-purple-50 p-6 rounded-2xl border border-purple-100 cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1 group"
           >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-green-800">
-                Tour Requests
-              </h3>
-              <FaCalendarCheck className="text-3xl text-green-300 group-hover:text-green-500 transition" />
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-lg font-bold text-purple-800">Tours</h3>
+              <FaCalendarCheck className="text-2xl text-purple-300 group-hover:text-purple-500 transition" />
             </div>
-            <p className="text-5xl font-black text-green-600">
+            <p className="text-4xl font-black text-purple-600">
               {tours.filter((t) => t.status === "pending").length}
             </p>
-            <p className="text-sm text-green-400 mt-4 font-medium">
-              Manage requests &rarr;
+            <p className="text-xs text-purple-400 mt-2 font-medium">
+              Tour requests &rarr;
             </p>
           </div>
         </div>
       )}
 
-      {activeView === "properties" && (
-        <div className="space-y-10">
-          {showCreateForm && (
-            <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
-              <CreatePropertyForm
-                onSuccess={handleCreateSuccess}
-                onCancel={() => setShowCreateForm(false)}
-              />
-            </div>
-          )}
+      {showCreateForm && (
+        <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 mb-8">
+          <CreatePropertyForm
+            onSuccess={handleCreateSuccess}
+            onCancel={() => setShowCreateForm(false)}
+          />
+        </div>
+      )}
 
-          {/* Published */}
-          <div>
-            <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
-              Published Listings
-              <span className="text-sm font-normal text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
-                {published.length}
-              </span>
-            </h3>
-            <div className="space-y-4">
-              {published.map((p) => (
-                <PropertyCard key={p._id} property={p} />
-              ))}
-              {published.length === 0 && (
-                <p className="text-gray-400 bg-gray-50 p-8 rounded-xl border border-dashed text-center">
-                  No published properties yet.
-                </p>
-              )}
-            </div>
+      {activeView === "drafts" && (
+        <div>
+          <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
+            My Drafts
+            <span className="text-sm font-normal text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
+              {drafts.length}
+            </span>
+          </h3>
+          <div className="space-y-4">
+            {drafts.map((p) => (
+              <PropertyCard key={p._id} property={p} />
+            ))}
+            {drafts.length === 0 && (
+              <p className="text-gray-400 bg-gray-50 p-8 rounded-xl border border-dashed text-center">
+                No drafts found.
+              </p>
+            )}
           </div>
+        </div>
+      )}
 
-          {/* Pending & Drafts */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-            <div>
-              <h3 className="text-xl font-bold mb-4 text-yellow-700">
-                Pending Approval ({pending.length})
-              </h3>
-              <div className="space-y-4">
-                {pending.map((p) => (
-                  <PropertyCard key={p._id} property={p} />
-                ))}
-              </div>
-            </div>
-            <div>
-              <h3 className="text-xl font-bold mb-4 text-gray-700">
-                Drafts ({drafts.length})
-              </h3>
-              <div className="space-y-4">
-                {drafts.map((p) => (
-                  <PropertyCard key={p._id} property={p} />
-                ))}
-              </div>
-            </div>
+      {activeView === "pending" && (
+        <div>
+          <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
+            Pending Approval
+            <span className="text-sm font-normal text-amber-400 bg-amber-50 px-3 py-1 rounded-full border border-amber-100">
+              {pending.length}
+            </span>
+          </h3>
+          <div className="space-y-4">
+            {pending.map((p) => (
+              <PropertyCard key={p._id} property={p} />
+            ))}
+            {pending.length === 0 && (
+              <p className="text-gray-400 bg-gray-50 p-8 rounded-xl border border-dashed text-center">
+                No pending properties.
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {activeView === "posted" && (
+        <div>
+          <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
+            Posted Properties
+            <span className="text-sm font-normal text-blue-400 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
+              {published.length}
+            </span>
+          </h3>
+          <div className="space-y-4">
+            {published.map((p) => (
+              <PropertyCard key={p._id} property={p} />
+            ))}
+            {published.length === 0 && (
+              <p className="text-gray-400 bg-gray-50 p-8 rounded-xl border border-dashed text-center">
+                No posted properties yet.
+              </p>
+            )}
           </div>
         </div>
       )}

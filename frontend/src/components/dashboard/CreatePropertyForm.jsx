@@ -22,19 +22,16 @@ const CreatePropertyForm = ({ onSuccess, onCancel }) => {
   );
 
   useEffect(() => {
+    dispatch(reset());
+  }, [dispatch]);
+
+  useEffect(() => {
     if (isError) {
       toast.error(message);
     }
 
     if (isSuccess) {
       toast.success("Draft created successfully!");
-      setFormData({
-        title: "",
-        description: "",
-        location: "",
-        price: "",
-      });
-      setImages([]);
       onSuccess(); // Callback to parent to close form or refresh list
       dispatch(reset());
     }
@@ -80,7 +77,7 @@ const CreatePropertyForm = ({ onSuccess, onCancel }) => {
         <FaTimes size={20} />
       </button>
 
-      <h3 className="text-xl font-bold mb-4 text-[var(--color-primary)]">
+      <h3 className="text-xl font-bold mb-4 text-(--color-primary)">
         Start a New Draft
       </h3>
 
@@ -93,7 +90,7 @@ const CreatePropertyForm = ({ onSuccess, onCancel }) => {
             <input
               type="text"
               id="title"
-              className="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-[var(--color-primary)] outline-none"
+              className="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-(--color-primary) outline-none"
               value={title}
               onChange={onMutate}
               required
@@ -106,7 +103,7 @@ const CreatePropertyForm = ({ onSuccess, onCancel }) => {
             <input
               type="number"
               id="price"
-              className="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-[var(--color-primary)] outline-none"
+              className="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-(--color-primary) outline-none"
               value={price}
               onChange={onMutate}
               required
@@ -124,7 +121,7 @@ const CreatePropertyForm = ({ onSuccess, onCancel }) => {
           <input
             type="text"
             id="location"
-            className="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-[var(--color-primary)] outline-none"
+            className="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-(--color-primary) outline-none"
             value={location}
             onChange={onMutate}
             required
@@ -140,7 +137,7 @@ const CreatePropertyForm = ({ onSuccess, onCancel }) => {
           </label>
           <textarea
             id="description"
-            className="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-[var(--color-primary)] outline-none h-24"
+            className="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-(--color-primary) outline-none h-24"
             value={description}
             onChange={onMutate}
             required
@@ -154,7 +151,7 @@ const CreatePropertyForm = ({ onSuccess, onCancel }) => {
           <input
             type="file"
             id="images"
-            className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[var(--color-secondary)] file:text-white hover:file:bg-opacity-90"
+            className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-(--color-secondary) file:text-white hover:file:bg-opacity-90"
             onChange={onFileChange}
             max="6"
             accept=".jpg,.png,.jpeg"
@@ -173,7 +170,7 @@ const CreatePropertyForm = ({ onSuccess, onCancel }) => {
           </button>
           <button
             type="submit"
-            className="bg-[var(--color-primary)] text-white px-6 py-2 rounded-lg font-bold hover:bg-opacity-90 transition"
+            className="bg-(--color-primary) text-white px-6 py-2 rounded-lg font-bold hover:bg-opacity-90 transition"
           >
             Create Draft
           </button>
