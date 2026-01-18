@@ -56,11 +56,27 @@ const CreatePropertyForm = ({ onSuccess, onCancel, initialData }) => {
   };
 
   const onFileChange = (e) => {
-    setImages(e.target.files);
+    const files = Array.from(e.target.files);
+    const totalImages = existingImages.length + files.length;
+
+    if (totalImages > 6) {
+      toast.error(
+        `You can only have a maximum of 6 images. You have ${existingImages.length} existing images, so you can add up to ${6 - existingImages.length} more.`,
+      );
+      e.target.value = ""; // Clear the input
+      setImages([]);
+    } else {
+      setImages(files);
+    }
   };
 
   const onSubmit = (e) => {
     e.preventDefault();
+
+    if (existingImages.length === 0 && images.length === 0) {
+      toast.error("Please upload at least one image.");
+      return;
+    }
 
     const propertyData = new FormData();
     propertyData.append("title", title);
@@ -197,7 +213,9 @@ const CreatePropertyForm = ({ onSuccess, onCancel, initialData }) => {
 
         <div className="mb-6">
           <label className="block text-sm font-semibold mb-1" htmlFor="images">
-            {initialData ? "Add More Images (Optional)" : "Images * (Max 6)"}
+            {initialData
+              ? `Add More Images (Max ${6 - existingImages.length} more)`
+              : "Images * (Max 6)"}
           </label>
           <input
             type="file"
@@ -207,7 +225,8 @@ const CreatePropertyForm = ({ onSuccess, onCancel, initialData }) => {
             max="6"
             accept=".jpg,.png,.jpeg"
             multiple
-            required={!initialData && existingImages.length === 0} // Required if new draft OR editing but deleted all images
+            required={existingImages.length === 0}
+            disabled={existingImages.length >= 6}
           />
         </div>
 
