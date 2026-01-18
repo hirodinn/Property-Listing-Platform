@@ -30,16 +30,23 @@ app.use(
 // CORS configuration
 const allowedOrigins = [
   "http://localhost:5173",
-  process.env.FRONTEND_URL, // Add frontend URL from env
+  process.env.FRONTEND_URL?.replace(/\/$/, ""), // Strip trailing slash from env
 ].filter(Boolean);
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
+      // Allow if no origin (like mobile apps/curl) or if in allowed list
+      // Also automatically allow any .onrender.com subdomain for ease of use
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        origin.endsWith(".onrender.com")
+      ) {
         callback(null, true);
       } else {
-        callback(new Error("Not allowed by CORS"));
+        console.error(`CORS blocked for origin: ${origin}`);
+        callback(new Error(`Not allowed by CORS: ${origin}`));
       }
     },
     credentials: true,
@@ -60,6 +67,7 @@ if (process.env.NODE_ENV === "production") {
 
   app.use(express.static(frontendPath));
 
+  // Catch-all: If not an /api route, serve the frontend
   app.get(/^(?!\/api).*/, (req, res) =>
     res.sendFile(path.resolve(frontendPath, "index.html")),
   );

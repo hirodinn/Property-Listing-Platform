@@ -1,11 +1,12 @@
 import axios from "axios";
 
-const API_URL = `${import.meta.env.VITE_API_URL}/properties`;
+const BASE_URL = import.meta.env.VITE_API_URL || "/api";
+const API_URL = `${BASE_URL}/properties`;
 
 // Axios instance with credentials enabled for cookies
 const axiosInstance = axios.create({
   withCredentials: true,
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: BASE_URL,
 });
 
 // Since we set baseURL in instance, we can just use /properties path or just use full URL if we stick to axios.

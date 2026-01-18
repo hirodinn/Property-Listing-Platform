@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL + "/admin";
+const API_URL = (import.meta.env.VITE_API_URL || "/api") + "/admin";
 
 // Get system metrics
 const getSystemMetrics = async () => {

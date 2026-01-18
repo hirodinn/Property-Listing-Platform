@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API_URL = `${import.meta.env.VITE_API_URL}/auth`;
+const API_URL = (import.meta.env.VITE_API_URL || "/api") + "/auth";
 axios.defaults.withCredentials = true;
 
 // Register User
@@ -10,7 +10,6 @@ export const register = createAsyncThunk(
   async (userData, thunkAPI) => {
     try {
       const response = await axios.post(`${API_URL}/register`, userData);
-      // Even if cookie is set, we might want user info in state
       return response.data;
     } catch (error) {
       const message =
@@ -44,7 +43,7 @@ export const login = createAsyncThunk(
 );
 
 // Logout User
-export const logout = createAsyncThunk("auth/logout", async (_, thunkAPI) => {
+export const logout = createAsyncThunk("auth/logout", async () => {
   try {
     await axios.post(`${API_URL}/logout`);
   } catch (error) {
@@ -56,6 +55,15 @@ export const logout = createAsyncThunk("auth/logout", async (_, thunkAPI) => {
 export const getMe = createAsyncThunk("auth/me", async (_, thunkAPI) => {
   try {
     const response = await axios.get(`${API_URL}/me`);
+
+    // Safety check: If we get HTML instead of JSON, we're likely hitting the catch-all
+    if (
+      typeof response.data === "string" &&
+      response.data.includes("<!doctype html>")
+    ) {
+      return thunkAPI.rejectWithValue("Invalid session response");
+    }
+
     return response.data;
   } catch (error) {
     const message =
