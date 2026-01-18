@@ -47,6 +47,18 @@ const publishProperty = async (propertyId) => {
   return response.data;
 };
 
+// Approve property
+const approveProperty = async (propertyId) => {
+  const response = await axiosInstance.put(`/properties/${propertyId}/approve`);
+  return response.data;
+};
+
+// Reject property
+const rejectProperty = async (propertyId) => {
+  const response = await axiosInstance.put(`/properties/${propertyId}/reject`);
+  return response.data;
+};
+
 const propertyService = {
   createProperty,
   getProperties,
@@ -54,6 +66,8 @@ const propertyService = {
   getMyProperties,
   deleteProperty,
   publishProperty,
+  approveProperty,
+  rejectProperty,
 };
 
 export default propertyService;

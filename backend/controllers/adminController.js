@@ -11,12 +11,16 @@ const getSystemMetrics = async (req, res) => {
     status: "published",
   });
   const draftProperties = await Property.countDocuments({ status: "draft" });
+  const pendingProperties = await Property.countDocuments({
+    status: "pending",
+  });
 
   res.json({
     totalUsers,
     totalProperties,
     publishedProperties,
     draftProperties,
+    pendingProperties,
   });
 };
 

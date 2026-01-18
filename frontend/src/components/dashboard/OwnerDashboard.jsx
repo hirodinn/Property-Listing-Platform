@@ -8,7 +8,14 @@ import {
   reset,
 } from "../../features/properties/propertySlice";
 import Spinner from "../Spinner";
-import { FaPlus, FaTrash, FaPen, FaEye, FaUpload } from "react-icons/fa";
+import {
+  FaPlus,
+  FaTrash,
+  FaPen,
+  FaEye,
+  FaUpload,
+  FaClock,
+} from "react-icons/fa";
 import CreatePropertyForm from "./CreatePropertyForm";
 
 const OwnerDashboard = () => {
@@ -56,6 +63,7 @@ const OwnerDashboard = () => {
   }
 
   const drafts = properties.filter((p) => p.status === "draft");
+  const pending = properties.filter((p) => p.status === "pending");
   const published = properties.filter((p) => p.status === "published");
 
   const PropertyCard = ({ property }) => (
@@ -146,6 +154,24 @@ const OwnerDashboard = () => {
       )}
 
       <div className="space-y-10">
+        {/* Pending Approval Section */}
+        {pending.length > 0 && (
+          <section>
+            <div className="flex items-center gap-3 mb-4">
+              <h3 className="text-xl font-bold text-yellow-700">
+                Pending Approval
+              </h3>
+              <span className="bg-yellow-100 text-yellow-700 text-xs font-bold px-2 py-1 rounded-full">
+                {pending.length}
+              </span>
+            </div>
+            <div className="space-y-4">
+              {pending.map((property) => (
+                <PropertyCard key={property._id} property={property} />
+              ))}
+            </div>
+          </section>
+        )}
         {/* Drafts Section */}
         <section>
           <div className="flex items-center gap-3 mb-4">

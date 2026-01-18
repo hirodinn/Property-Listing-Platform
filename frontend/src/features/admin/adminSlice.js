@@ -95,6 +95,7 @@ export const adminSlice = createSlice({
         // Correcting the mapping based on backend response keys
         state.usersCount = action.payload.totalUsers;
         state.propertiesCount = action.payload.totalProperties;
+        state.pendingProperties = action.payload.pendingProperties;
       })
       .addCase(getSystemMetrics.rejected, (state, action) => {
         state.isLoading = false;

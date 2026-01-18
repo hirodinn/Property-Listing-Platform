@@ -97,6 +97,32 @@ export const publishProperty = createAsyncThunk(
   },
 );
 
+// Approve property
+export const approveProperty = createAsyncThunk(
+  "properties/approve",
+  async (id, thunkAPI) => {
+    try {
+      return await propertyService.approveProperty(id);
+    } catch (error) {
+      const message = responseErrorMessage(error);
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+
+// Reject property
+export const rejectProperty = createAsyncThunk(
+  "properties/reject",
+  async (id, thunkAPI) => {
+    try {
+      return await propertyService.rejectProperty(id);
+    } catch (error) {
+      const message = responseErrorMessage(error);
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+
 export const propertySlice = createSlice({
   name: "property",
   initialState,
@@ -170,6 +196,26 @@ export const propertySlice = createSlice({
         );
       })
       .addCase(publishProperty.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        const index = state.properties.findIndex(
+          (p) => p._id === action.payload._id,
+        );
+        if (index !== -1) {
+          state.properties[index] = action.payload;
+        }
+      })
+      .addCase(approveProperty.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        const index = state.properties.findIndex(
+          (p) => p._id === action.payload._id,
+        );
+        if (index !== -1) {
+          state.properties[index] = action.payload;
+        }
+      })
+      .addCase(rejectProperty.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
         const index = state.properties.findIndex(

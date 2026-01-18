@@ -7,7 +7,19 @@ import {
   reset,
 } from "../../features/admin/adminSlice";
 import Spinner from "../Spinner";
-import { FaUsers, FaBuilding, FaSearch, FaArrowLeft } from "react-icons/fa";
+import {
+  FaUsers,
+  FaBuilding,
+  FaSearch,
+  FaArrowLeft,
+  FaClock,
+  FaCheck,
+  FaTimes,
+} from "react-icons/fa";
+import {
+  approveProperty,
+  rejectProperty,
+} from "../../features/properties/propertySlice";
 
 const AdminDashboard = () => {
   const dispatch = useDispatch();
@@ -16,12 +28,19 @@ const AdminDashboard = () => {
     propertiesCount,
     usersList,
     propertiesList,
+    pendingProperties: initialPendingCount,
     isLoading,
     isError,
     message,
   } = useSelector((state) => state.admin);
 
-  const [activeView, setActiveView] = useState("overview"); // overview, users, properties
+  const [pendingCount, setPendingCount] = useState(initialPendingCount);
+
+  useEffect(() => {
+    setPendingCount(initialPendingCount);
+  }, [initialPendingCount]);
+
+  const [activeView, setActiveView] = useState("overview"); // overview, users, properties, pending
 
   useEffect(() => {
     dispatch(getSystemMetrics());
@@ -39,6 +58,27 @@ const AdminDashboard = () => {
   const handleViewProperties = () => {
     dispatch(getAllProperties());
     setActiveView("properties");
+  };
+
+  const handleViewPending = () => {
+    dispatch(getAllProperties());
+    setActiveView("pending");
+  };
+
+  const handleApprove = async (id) => {
+    if (window.confirm("Are you sure you want to approve this property?")) {
+      await dispatch(approveProperty(id));
+      dispatch(getAllProperties()); // Refresh list
+      dispatch(getSystemMetrics()); // Refresh metrics
+    }
+  };
+
+  const handleReject = async (id) => {
+    if (window.confirm("Are you sure you want to reject this property?")) {
+      await dispatch(rejectProperty(id));
+      dispatch(getAllProperties()); // Refresh list
+      dispatch(getSystemMetrics()); // Refresh metrics
+    }
   };
 
   if (isLoading) return <Spinner />;
@@ -105,6 +145,23 @@ const AdminDashboard = () => {
             </p>
             <p className="text-sm text-orange-400 mt-2">
               Click to view details
+            </p>
+          </div>
+
+          {/* Pending Approval Card */}
+          <div
+            onClick={handleViewPending}
+            className="bg-yellow-50 p-6 rounded-xl border border-yellow-100 cursor-pointer hover:shadow-lg transition transform hover:-translate-y-1 group"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-semibold text-yellow-800">
+                Pending Approval
+              </h3>
+              <FaClock className="text-3xl text-yellow-300 group-hover:text-yellow-500 transition" />
+            </div>
+            <p className="text-4xl font-bold text-yellow-600">{pendingCount}</p>
+            <p className="text-sm text-yellow-400 mt-2">
+              Click to review pending
             </p>
           </div>
         </div>
@@ -205,6 +262,71 @@ const AdminDashboard = () => {
                   <tr>
                     <td colSpan="5" className="text-center py-4">
                       No properties found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+      {activeView === "pending" && (
+        <div>
+          <h3 className="text-xl font-bold mb-4">Pending Properties</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                  <th className="py-3 px-6">Title</th>
+                  <th className="py-3 px-6">Owner</th>
+                  <th className="py-3 px-6">Price</th>
+                  <th className="py-3 px-6">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="text-gray-600 text-sm font-light">
+                {Array.isArray(propertiesList) &&
+                propertiesList.filter((p) => p.status === "pending").length >
+                  0 ? (
+                  propertiesList
+                    .filter((p) => p.status === "pending")
+                    .map((property) => (
+                      <tr
+                        key={property._id}
+                        className="border-b border-gray-200 hover:bg-gray-50"
+                      >
+                        <td className="py-3 px-6 whitespace-nowrap font-medium">
+                          {property.title}
+                        </td>
+                        <td className="py-3 px-6">
+                          {property.owner?.name || "Unknown"}
+                        </td>
+                        <td className="py-3 px-6">
+                          ${property.price.toLocaleString()}
+                        </td>
+                        <td className="py-3 px-6">
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleApprove(property._id)}
+                              className="bg-green-100 text-green-600 p-2 rounded-lg hover:bg-green-200 transition"
+                              title="Approve"
+                            >
+                              <FaCheck />
+                            </button>
+                            <button
+                              onClick={() => handleReject(property._id)}
+                              className="bg-red-100 text-red-600 p-2 rounded-lg hover:bg-red-200 transition"
+                              title="Reject"
+                            >
+                              <FaTimes />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                ) : (
+                  <tr>
+                    <td colSpan="4" className="text-center py-4">
+                      No pending properties
                     </td>
                   </tr>
                 )}

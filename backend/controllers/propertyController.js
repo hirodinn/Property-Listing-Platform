@@ -39,7 +39,7 @@ const createProperty = async (req, res, next) => {
       price: Number(price),
       images: imageUrls,
       owner: req.user._id,
-      status: "draft",
+      status: "pending",
     });
 
     res.status(201).json(property);
@@ -53,13 +53,11 @@ const createProperty = async (req, res, next) => {
 // @route   PUT /api/properties/:id/publish
 // @access  Owner
 const publishProperty = async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
-    const property = await Property.findById(req.params.id).session(session);
+    const property = await Property.findById(req.params.id);
 
     if (!property) {
+      res.status(404);
       throw new Error("Property not found");
     }
 
@@ -78,17 +76,12 @@ const publishProperty = async (req, res) => {
       throw new Error("Property missing required fields for publication");
     }
 
-    property.status = "published";
-    await property.save({ session });
+    property.status = "pending";
+    await property.save();
 
-    await session.commitTransaction();
     res.json(property);
   } catch (error) {
-    await session.abortTransaction();
-    res.status(400); // Bad Request or whatever error code
-    throw new Error(error.message);
-  } finally {
-    session.endSession();
+    res.status(400).json({ message: error.message });
   }
 };
 
@@ -175,6 +168,58 @@ const getPropertyById = async (req, res) => {
   }
 };
 
+// @desc    Approve Property (Admin)
+// @route   PUT /api/properties/:id/approve
+// @access  Admin
+const approveProperty = async (req, res) => {
+  try {
+    const property = await Property.findById(req.params.id);
+
+    if (!property) {
+      res.status(404);
+      throw new Error("Property not found");
+    }
+
+    if (property.status !== "pending") {
+      res.status(400);
+      throw new Error("Property is not in pending status");
+    }
+
+    property.status = "published";
+    await property.save();
+
+    res.json(property);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// @desc    Reject Property (Admin)
+// @route   PUT /api/properties/:id/reject
+// @access  Admin
+const rejectProperty = async (req, res) => {
+  try {
+    const property = await Property.findById(req.params.id);
+
+    if (!property) {
+      res.status(404);
+      throw new Error("Property not found");
+    }
+
+    if (property.status !== "pending") {
+      res.status(400);
+      throw new Error("Property is not in pending status");
+    }
+
+    property.status = "draft";
+    await property.save();
+
+    res.json(property);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
 export {
   createProperty,
   publishProperty,
@@ -182,4 +227,6 @@ export {
   getMyProperties,
   deleteProperty,
   getPropertyById,
+  approveProperty,
+  rejectProperty,
 };

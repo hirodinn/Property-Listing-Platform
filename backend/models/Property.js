@@ -26,7 +26,7 @@ const propertySchema = mongoose.Schema(
     ],
     status: {
       type: String,
-      enum: ["draft", "published", "archived"],
+      enum: ["draft", "pending", "published", "archived"],
       default: "draft",
     },
     owner: {
