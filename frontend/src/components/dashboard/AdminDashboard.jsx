@@ -22,6 +22,7 @@ import {
   FaUserTie,
   FaUser,
   FaArchive,
+  FaTrash,
 } from "react-icons/fa";
 import {
   approveProperty,
@@ -279,7 +280,7 @@ const AdminDashboard = () => {
 
       {activeView === "properties" && (
         <div className="space-y-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-green-50 p-4 rounded-xl border border-green-100">
               <div className="flex items-center justify-between mb-1">
                 <span className="text-xs font-bold text-green-800 uppercase tracking-wider">
@@ -295,17 +296,18 @@ const AdminDashboard = () => {
                 }
               </p>
             </div>
-            <div className="bg-red-50 p-4 rounded-xl border border-red-100">
+            <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-bold text-red-800 uppercase tracking-wider">
+                <span className="text-xs font-bold text-blue-800 uppercase tracking-wider">
                   Archived
                 </span>
-                <FaArchive className="text-red-300" />
+                <FaArchive className="text-blue-300" />
               </div>
-              <p className="text-2xl font-black text-red-600">
+              <p className="text-2xl font-black text-blue-600">
                 {
-                  propertiesList.filter((p) => p.status === "archived").length
-                  /* Or use p.archived if available, but status is better */
+                  propertiesList.filter(
+                    (p) => p.status === "archived" && !p.deletedAt,
+                  ).length
                 }
               </p>
             </div>
@@ -322,6 +324,17 @@ const AdminDashboard = () => {
                     (p) => p.status === "draft" && !p.deletedAt,
                   ).length
                 }
+              </p>
+            </div>
+            <div className="bg-red-50 p-4 rounded-xl border border-red-100">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-bold text-red-800 uppercase tracking-wider">
+                  Deleted
+                </span>
+                <FaTrash className="text-red-300" />
+              </div>
+              <p className="text-2xl font-black text-red-600">
+                {propertiesList.filter((p) => p.deletedAt).length}
               </p>
             </div>
           </div>
@@ -362,16 +375,18 @@ const AdminDashboard = () => {
                       <td className="py-4 px-6">
                         <span
                           className={`py-1 px-3 rounded-lg text-[10px] font-bold uppercase tracking-wider ${
-                            property.status === "archived"
+                            property.deletedAt
                               ? "bg-red-100 text-red-700"
-                              : property.status === "published"
-                                ? "bg-green-100 text-green-700"
-                                : property.status === "pending"
-                                  ? "bg-amber-100 text-amber-700"
-                                  : "bg-gray-100 text-gray-600"
+                              : property.status === "archived"
+                                ? "bg-blue-100 text-blue-700"
+                                : property.status === "published"
+                                  ? "bg-green-100 text-green-700"
+                                  : property.status === "pending"
+                                    ? "bg-amber-100 text-amber-700"
+                                    : "bg-gray-100 text-gray-600"
                           }`}
                         >
-                          {property.status}
+                          {property.deletedAt ? "Deleted" : property.status}
                         </span>
                       </td>
                       <td className="py-4 px-6 text-gray-400 text-right">

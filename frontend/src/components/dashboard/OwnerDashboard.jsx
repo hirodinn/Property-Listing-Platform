@@ -174,7 +174,7 @@ const OwnerDashboard = () => {
         {property.status === "published" && (
           <button
             onClick={() => handleArchive(property._id)}
-            className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 font-medium text-sm"
+            className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 font-medium text-sm"
           >
             <FaArchive /> Archive
           </button>
@@ -266,16 +266,16 @@ const OwnerDashboard = () => {
           {/* Posted Card */}
           <div
             onClick={() => setActiveView("posted")}
-            className="bg-blue-50 p-6 rounded-2xl border border-blue-100 cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1 group"
+            className="bg-green-50 p-6 rounded-2xl border border-green-100 cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1 group"
           >
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-lg font-bold text-blue-800">Posted</h3>
-              <FaBuilding className="text-2xl text-blue-300 group-hover:text-blue-500 transition" />
+              <h3 className="text-lg font-bold text-green-800">Posted</h3>
+              <FaBuilding className="text-2xl text-green-300 group-hover:text-green-500 transition" />
             </div>
-            <p className="text-4xl font-black text-blue-600">
+            <p className="text-4xl font-black text-green-600">
               {published.length}
             </p>
-            <p className="text-xs text-blue-400 mt-2 font-medium">
+            <p className="text-xs text-green-400 mt-2 font-medium">
               Live listings &rarr;
             </p>
           </div>
@@ -283,16 +283,16 @@ const OwnerDashboard = () => {
           {/* Archived Card */}
           <div
             onClick={() => setActiveView("archived")}
-            className="bg-red-50 p-6 rounded-2xl border border-red-100 cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1 group"
+            className="bg-blue-50 p-6 rounded-2xl border border-blue-100 cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1 group"
           >
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-lg font-bold text-red-800">Archived</h3>
-              <FaArchive className="text-2xl text-red-300 group-hover:text-red-500 transition" />
+              <h3 className="text-lg font-bold text-blue-800">Archived</h3>
+              <FaArchive className="text-2xl text-blue-300 group-hover:text-blue-500 transition" />
             </div>
-            <p className="text-4xl font-black text-red-600">
+            <p className="text-4xl font-black text-blue-600">
               {archived.length}
             </p>
-            <p className="text-xs text-red-400 mt-2 font-medium">
+            <p className="text-xs text-blue-400 mt-2 font-medium">
               Archived listings &rarr;
             </p>
           </div>
@@ -376,7 +376,7 @@ const OwnerDashboard = () => {
         <div>
           <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
             Posted Properties
-            <span className="text-sm font-normal text-blue-400 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
+            <span className="text-sm font-normal text-green-400 bg-green-50 px-3 py-1 rounded-full border border-green-100">
               {published.length}
             </span>
           </h3>
@@ -397,7 +397,7 @@ const OwnerDashboard = () => {
         <div>
           <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
             Archived Properties
-            <span className="text-sm font-normal text-red-400 bg-red-50 px-3 py-1 rounded-full border border-red-100">
+            <span className="text-sm font-normal text-blue-400 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
               {archived.length}
             </span>
           </h3>

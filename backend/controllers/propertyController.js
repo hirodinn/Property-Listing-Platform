@@ -120,7 +120,9 @@ const getProperties = async (req, res) => {
 // @access  Owner
 const getMyProperties = async (req, res) => {
   // Use .find() directly to include drafts, but standard pre-hook filters deleted.
-  const properties = await Property.find({ owner: req.user._id });
+  const properties = await Property.find({ owner: req.user.id }).sort({
+    createdAt: -1,
+  });
   res.json(properties);
 };
 
