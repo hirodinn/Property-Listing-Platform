@@ -244,6 +244,58 @@ const updateProperty = async (req, res, next) => {
     if (location) property.location = location;
     if (price) property.price = Number(price);
 
+    // Handle image updates (deletion)
+    let keptImages = [];
+    if (req.body.keptImages) {
+      if (typeof req.body.keptImages === "string") {
+        // Handle case where it's a JSON string or single URL
+        try {
+          keptImages = JSON.parse(req.body.keptImages);
+          if (!Array.isArray(keptImages)) keptImages = [req.body.keptImages];
+        } catch (e) {
+          keptImages = [req.body.keptImages];
+        }
+      } else {
+        keptImages = req.body.keptImages;
+      }
+    } else {
+      // If keptImages is not sent, assumption depends on intent.
+      // For this implementation, let's assume if it's missing, it means keep logic wasn't handled (e.g. old client),
+      // OR if it's empty, user deleted all.
+      // Careful: FormData with no keptImages means []? Or undefined?
+      // Usually if array is empty, it's not sent.
+      // Let's rely on frontend sending 'keptImages' as a JSON string to be safe and explicit.
+      if (req.body.hasImageUpdates === "true") {
+        keptImages = [];
+      } else {
+        keptImages = property.images; // Default to keeping all if not explicitly updating images
+      }
+    }
+
+    // Normalize to strings if needed
+    // The filter below ensures we only compare what we have.
+
+    // Identify images to delete
+    // We trust req.user owns the property, so they can delete what's there.
+    const imagesToDelete = property.images.filter(
+      (img) => !keptImages.includes(img),
+    );
+
+    if (imagesToDelete.length > 0) {
+      for (const imgUrl of imagesToDelete) {
+        // Extract public ID
+        // Format: .../upload/v1234/folder/id.ext or .../upload/folder/id.ext
+        const publicIdMatch = imgUrl.match(/\/upload\/(?:v\d+\/)?(.+)\.[^.]+$/);
+        if (publicIdMatch) {
+          const publicId = publicIdMatch[1];
+          await cloudinary.uploader.destroy(publicId);
+        }
+      }
+    }
+
+    // Set property images to keptImages
+    property.images = keptImages;
+
     // Handle new images
     if (req.files && req.files.length > 0) {
       for (const file of req.files) {

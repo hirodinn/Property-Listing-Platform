@@ -17,6 +17,9 @@ const CreatePropertyForm = ({ onSuccess, onCancel, initialData }) => {
     price: initialData?.price || "",
   });
   const [images, setImages] = useState([]);
+  const [existingImages, setExistingImages] = useState(
+    initialData?.images || [],
+  );
 
   const { title, description, location, price } = formData;
 
@@ -43,7 +46,7 @@ const CreatePropertyForm = ({ onSuccess, onCancel, initialData }) => {
       onSuccess(); // Callback to parent to close form or refresh list
       dispatch(reset());
     }
-  }, [isError, isSuccess, message, dispatch, onSuccess]);
+  }, [isError, isSuccess, message, dispatch, onSuccess, initialData]);
 
   const onMutate = (e) => {
     setFormData((prevState) => ({
@@ -65,8 +68,15 @@ const CreatePropertyForm = ({ onSuccess, onCancel, initialData }) => {
     propertyData.append("location", location);
     propertyData.append("price", price);
 
-    for (let i = 0; i < images.length; i++) {
-      propertyData.append("images", images[i]);
+    if (images) {
+      Array.from(images).forEach((image) => {
+        propertyData.append("images", image);
+      });
+    }
+
+    if (initialData) {
+      propertyData.append("keptImages", JSON.stringify(existingImages));
+      propertyData.append("hasImageUpdates", "true");
     }
 
     console.log("propertyData", propertyData);
@@ -156,6 +166,35 @@ const CreatePropertyForm = ({ onSuccess, onCancel, initialData }) => {
           ></textarea>
         </div>
 
+        {/* Existing Images */}
+        {existingImages.length > 0 && (
+          <div className="mb-4">
+            <h4 className="text-sm font-semibold mb-2">Existing Images</h4>
+            <div className="flex flex-wrap gap-2">
+              {existingImages.map((img, index) => (
+                <div key={index} className="relative w-24 h-24">
+                  <img
+                    src={img}
+                    alt={`Existing ${index}`}
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setExistingImages(
+                        existingImages.filter((_, i) => i !== index),
+                      )
+                    }
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 text-xs hover:bg-red-600"
+                  >
+                    <FaTimes />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="mb-6">
           <label className="block text-sm font-semibold mb-1" htmlFor="images">
             {initialData ? "Add More Images (Optional)" : "Images * (Max 6)"}
@@ -168,7 +207,7 @@ const CreatePropertyForm = ({ onSuccess, onCancel, initialData }) => {
             max="6"
             accept=".jpg,.png,.jpeg"
             multiple
-            required={!initialData} // Not required if editing (already has images)
+            required={!initialData && existingImages.length === 0} // Required if new draft OR editing but deleted all images
           />
         </div>
 

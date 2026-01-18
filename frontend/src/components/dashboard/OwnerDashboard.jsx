@@ -285,6 +285,7 @@ const OwnerDashboard = () => {
       {showCreateForm && (
         <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 mb-8">
           <CreatePropertyForm
+            key={editProperty ? editProperty._id : "create-form"}
             onSuccess={handleCreateSuccess}
             onCancel={() => {
               setShowCreateForm(false);
