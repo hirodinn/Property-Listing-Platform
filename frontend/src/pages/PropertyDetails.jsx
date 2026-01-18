@@ -8,8 +8,8 @@ import {
   FaCalendarAlt,
   FaCheck,
   FaTimes,
-  FaHeart,
-  FaRegHeart,
+  FaBookmark,
+  FaRegBookmark,
 } from "react-icons/fa";
 import { toast } from "react-toastify";
 import {
@@ -234,17 +234,17 @@ function PropertyDetails() {
                   onClick={handleToggleFavorite}
                   className={`w-full mt-3 py-3 rounded-lg font-bold border-2 transition flex items-center justify-center gap-2 ${
                     isFavorited
-                      ? "border-red-500 text-red-500 hover:bg-red-50"
+                      ? "border-amber-500 text-amber-500 hover:bg-amber-50"
                       : "border-gray-200 text-[var(--color-text-main)] hover:bg-gray-50"
                   }`}
                 >
                   {isFavorited ? (
                     <>
-                      <FaHeart /> Saved to Favorites
+                      <FaBookmark /> Saved to Favorites
                     </>
                   ) : (
                     <>
-                      <FaRegHeart /> Save to Favorites
+                      <FaRegBookmark /> Save to Favorites
                     </>
                   )}
                 </button>

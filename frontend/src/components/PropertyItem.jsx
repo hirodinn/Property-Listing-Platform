@@ -5,8 +5,8 @@ import {
   FaMapMarkerAlt,
   FaChevronLeft,
   FaChevronRight,
-  FaHeart,
-  FaRegHeart,
+  FaBookmark,
+  FaRegBookmark,
 } from "react-icons/fa";
 import { toggleFavorite } from "../features/auth/authSlice";
 import { toast } from "react-toastify";
@@ -114,9 +114,9 @@ function PropertyItem({ property }) {
             className="absolute top-3 right-3 p-2 bg-white/20 hover:bg-white/40 rounded-full backdrop-blur-md transition z-20 group/fav"
           >
             {isFavorited ? (
-              <FaHeart className="text-red-500 scale-110" size={20} />
+              <FaBookmark className="text-amber-500 scale-110" size={20} />
             ) : (
-              <FaRegHeart
+              <FaRegBookmark
                 className="text-white group-hover/fav:scale-110 transition"
                 size={20}
               />
