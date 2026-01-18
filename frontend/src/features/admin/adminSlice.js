@@ -89,6 +89,32 @@ export const getAllTours = createAsyncThunk(
   },
 );
 
+// Delete User
+export const deleteUser = createAsyncThunk(
+  "admin/deleteUser",
+  async (id, thunkAPI) => {
+    try {
+      return await adminService.deleteUser(id);
+    } catch (error) {
+      const message = responseErrorMessage(error);
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+
+// Delete Tour
+export const deleteTour = createAsyncThunk(
+  "admin/deleteTour",
+  async (id, thunkAPI) => {
+    try {
+      return await adminService.deleteTour(id);
+    } catch (error) {
+      const message = responseErrorMessage(error);
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+
 export const adminSlice = createSlice({
   name: "admin",
   initialState,
@@ -140,6 +166,7 @@ export const adminSlice = createSlice({
         state.isLoading = false;
         state.toursList = action.payload;
       })
+
       .addCase(disableProperty.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
@@ -150,6 +177,22 @@ export const adminSlice = createSlice({
         if (index !== -1) {
           state.propertiesList[index] = action.payload.property;
         }
+      })
+      .addCase(deleteUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        // Remove user from list using the id passed to the thunk?
+        // Wait, generic action.meta.arg contains the id passed to thunk
+        state.usersList = state.usersList.filter(
+          (user) => user._id !== action.meta.arg,
+        );
+      })
+      .addCase(deleteTour.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.toursList = state.toursList.filter(
+          (tour) => tour._id !== action.meta.arg,
+        );
       });
   },
 });

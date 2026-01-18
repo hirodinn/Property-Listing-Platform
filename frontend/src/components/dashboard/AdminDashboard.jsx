@@ -6,6 +6,9 @@ import {
   getAllUsers,
   getAllProperties,
   getAllTours,
+  deleteUser,
+  deleteTour,
+  disableProperty,
   reset,
 } from "../../features/admin/adminSlice";
 import Spinner from "../Spinner";
@@ -93,6 +96,29 @@ const AdminDashboard = () => {
       dispatch(getAllProperties()); // Refresh list
       dispatch(getSystemMetrics()); // Refresh metrics
     }
+  };
+
+  const handleDeleteUser = async (id) => {
+    if (window.confirm("Are you sure you want to delete this user?")) {
+      await dispatch(deleteUser(id));
+      dispatch(getSystemMetrics());
+      dispatch(getAllUsers()); // Refresh user list
+    }
+  };
+
+  const handleDeleteTour = async (id) => {
+    if (window.confirm("Are you sure you want to remove this tour?")) {
+      await dispatch(deleteTour(id));
+      dispatch(getSystemMetrics());
+      dispatch(getAllTours()); // Refresh tours
+    }
+  };
+
+  const handleDisableProperty = async (id) => {
+    // Optimistically toggle? Or wait? Just dispatch.
+    await dispatch(disableProperty(id));
+    dispatch(getAllProperties()); // Refresh properties to show new status
+    dispatch(getSystemMetrics());
   };
 
   if (isLoading) return <Spinner />;
@@ -247,6 +273,7 @@ const AdminDashboard = () => {
                     <th className="py-4 px-6">Email</th>
                     <th className="py-4 px-6">Role</th>
                     <th className="py-4 px-6">Joined</th>
+                    <th className="py-4 px-6 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="text-gray-600 text-sm">
@@ -268,6 +295,15 @@ const AdminDashboard = () => {
                       </td>
                       <td className="py-4 px-6 text-gray-400">
                         {new Date(user.createdAt).toLocaleDateString()}
+                      </td>
+                      <td className="py-4 px-6 text-right">
+                        <button
+                          onClick={() => handleDeleteUser(user._id)}
+                          className="text-red-400 hover:text-red-600 p-2 rounded-full hover:bg-red-50 transition"
+                          title="Delete User"
+                        >
+                          <FaTrash />
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -361,7 +397,11 @@ const AdminDashboard = () => {
                   {propertiesList.map((property) => (
                     <tr
                       key={property._id}
-                      className="border-b border-gray-50 hover:bg-gray-50 transition"
+                      className={`border-b border-gray-50 transition ${property.deletedAt ? "opacity-75" : "hover:bg-gray-50 cursor-pointer"}`}
+                      onClick={() =>
+                        !property.deletedAt &&
+                        window.open(`/property/${property._id}`, "_self")
+                      }
                     >
                       <td className="py-4 px-6 whitespace-nowrap font-semibold text-gray-800 truncate max-w-[200px]">
                         {property.title}
@@ -416,7 +456,10 @@ const AdminDashboard = () => {
               .map((property) => (
                 <div
                   key={property._id}
-                  className="bg-white border border-gray-100 rounded-2xl p-4 flex items-center justify-between hover:shadow-md transition group"
+                  onClick={() =>
+                    window.open(`/property/${property._id}`, "_self")
+                  }
+                  className="bg-white border border-gray-100 rounded-2xl p-4 flex items-center justify-between hover:shadow-md transition group cursor-pointer"
                 >
                   <div className="flex items-center gap-4">
                     <div className="w-20 h-16 bg-gray-100 rounded-xl overflow-hidden border border-gray-50">
@@ -435,29 +478,6 @@ const AdminDashboard = () => {
                         {property.price.toLocaleString()}
                       </p>
                     </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleApprove(property._id)}
-                      className="bg-green-600 text-white p-2.5 rounded-xl hover:bg-green-700 transition shadow-sm"
-                      title="Approve"
-                    >
-                      <FaCheck size={14} />
-                    </button>
-                    <button
-                      onClick={() => handleReject(property._id)}
-                      className="bg-red-100 text-red-600 p-2.5 rounded-xl hover:bg-red-200 transition"
-                      title="Reject"
-                    >
-                      <FaTimes size={14} />
-                    </button>
-                    <Link
-                      to={`/property/${property._id}`}
-                      className="bg-blue-50 text-blue-600 p-2.5 rounded-xl hover:bg-blue-100 transition"
-                      title="View Details"
-                    >
-                      <FaSearch size={14} />
-                    </Link>
                   </div>
                 </div>
               ))}
@@ -526,6 +546,7 @@ const AdminDashboard = () => {
                     <th className="py-4 px-6">Owner</th>
                     <th className="py-4 px-6">Date/Time</th>
                     <th className="py-4 px-6 text-right">Status</th>
+                    <th className="py-4 px-6 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="text-gray-600 text-sm">
@@ -552,6 +573,15 @@ const AdminDashboard = () => {
                         >
                           {tour.status}
                         </span>
+                      </td>
+                      <td className="py-4 px-6 text-right">
+                        <button
+                          onClick={() => handleDeleteTour(tour._id)}
+                          className="text-red-400 hover:text-red-600 p-2 rounded-full hover:bg-red-50 transition"
+                          title="Remove Tour"
+                        >
+                          <FaTrash />
+                        </button>
                       </td>
                     </tr>
                   ))}

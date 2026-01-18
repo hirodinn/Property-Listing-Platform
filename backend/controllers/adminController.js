@@ -40,10 +40,44 @@ const disableProperty = async (req, res) => {
     throw new Error("Property not found");
   }
 
-  property.status = "archived"; // Or 'disabled' if we want a specific admin status
+  // Toggle status: if archived, set to published (active), else set to archived
+  property.status = property.status === "archived" ? "published" : "archived";
   await property.save();
 
-  res.json({ message: "Property disabled by admin", property });
+  res.json({
+    message: `Property status updated to ${property.status}`,
+    property,
+  });
+};
+
+// @desc    Delete user (Admin)
+// @route   DELETE /api/admin/users/:id
+// @access  Admin
+const deleteUser = async (req, res) => {
+  const user = await User.findById(req.params.id);
+
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  await user.deleteOne();
+  res.json({ message: "User removed" });
+};
+
+// @desc    Delete tour (Admin)
+// @route   DELETE /api/admin/tours/:id
+// @access  Admin
+const deleteTour = async (req, res) => {
+  const tour = await Tour.findById(req.params.id);
+
+  if (!tour) {
+    res.status(404);
+    throw new Error("Tour not found");
+  }
+
+  await tour.deleteOne();
+  res.json({ message: "Tour removed" });
 };
 
 // @desc    Get all properties (raw view for admin)
@@ -71,4 +105,6 @@ export {
   disableProperty,
   getAllPropertiesAdmin,
   getAllUsers,
+  deleteUser,
+  deleteTour,
 };

@@ -10,12 +10,16 @@ import {
   FaTimes,
   FaBookmark,
   FaRegBookmark,
+  FaArchive,
+  FaTrash,
 } from "react-icons/fa";
 import { toast } from "react-toastify";
 import {
   approveProperty,
   rejectProperty,
+  deleteProperty,
 } from "../features/properties/propertySlice";
+import { disableProperty } from "../features/admin/adminSlice"; // Assuming disableProperty is exported from adminSlice
 import { toggleFavorite } from "../features/auth/authSlice";
 import { requestTour } from "../features/tours/tourSlice";
 import TourRequestModal from "../components/TourRequestModal";
@@ -76,6 +80,40 @@ function PropertyDetails() {
       return;
     }
     dispatch(toggleFavorite(id));
+  };
+
+  const handleDisable = async () => {
+    if (
+      window.confirm(
+        `Are you sure you want to ${user.role === "admin" ? "disable" : "archive"} this property?`,
+      )
+    ) {
+      try {
+        if (user.role === "admin") {
+          await dispatch(disableProperty(id)).unwrap();
+          toast.success("Property disabled successfully");
+        } else {
+          // For owners, we might need archiveProperty logic or reuse disableProperty
+          await dispatch(disableProperty(id)).unwrap();
+          toast.success("Property status updated");
+        }
+        dispatch(getProperty(id)); // Refresh details
+      } catch (err) {
+        toast.error(err || "Failed to update property status");
+      }
+    }
+  };
+
+  const handleDelete = async () => {
+    if (window.confirm("Are you sure you want to delete this draft?")) {
+      try {
+        await dispatch(deleteProperty(id)).unwrap();
+        toast.success("Draft deleted successfully");
+        navigate("/dashboard");
+      } catch (err) {
+        toast.error(err || "Failed to delete draft");
+      }
+    }
   };
 
   const handleTourSubmit = async (tourData) => {
@@ -236,6 +274,30 @@ function PropertyDetails() {
                       </button>
                     </div>
                   )}
+
+                  {/* Disable (Archive) for Published Properties - Admin & Owner */}
+                  {property.status === "published" && (
+                    <button
+                      onClick={handleDisable}
+                      className="w-full bg-blue-100 text-blue-700 py-3 rounded-lg font-bold hover:bg-blue-200 transition flex items-center justify-center gap-2"
+                    >
+                      <FaArchive />{" "}
+                      {user.role === "admin"
+                        ? "Disable Property"
+                        : "Archive Property"}
+                    </button>
+                  )}
+
+                  {/* Delete for Drafts - Admin & Owner */}
+                  {property.status === "draft" && (
+                    <button
+                      onClick={handleDelete}
+                      className="w-full bg-red-100 text-red-700 py-3 rounded-lg font-bold hover:bg-red-200 transition flex items-center justify-center gap-2"
+                    >
+                      <FaTrash /> Delete Property
+                    </button>
+                  )}
+
                   <p className="text-center text-xs text-(--color-text-muted) italic">
                     Managing as {user.role}
                   </p>
@@ -273,7 +335,7 @@ function PropertyDetails() {
                 </button>
               )}
 
-              <p className="text-center text-xs text-[var(--color-text-muted)] mt-2">
+              <p className="text-center text-xs text-(--color-text-muted) mt-2">
                 Posted on {new Date(property.createdAt).toLocaleDateString()}
               </p>
             </div>

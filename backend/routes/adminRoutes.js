@@ -4,6 +4,8 @@ import {
   disableProperty,
   getAllPropertiesAdmin,
   getAllUsers,
+  deleteUser,
+  deleteTour,
 } from "../controllers/adminController.js";
 import { getAllToursAdmin } from "../controllers/tourController.js";
 import { protect, authorize } from "../middleware/authMiddleware.js";
@@ -19,5 +21,7 @@ router.get("/users", getAllUsers);
 router.get("/properties", getAllPropertiesAdmin);
 router.put("/properties/:id/disable", disableProperty);
 router.get("/tours/all", getAllToursAdmin);
+router.delete("/users/:id", deleteUser);
+router.delete("/tours/:id", deleteTour);
 
 export default router;

@@ -30,12 +30,26 @@ const disableProperty = async (id) => {
   return response.data;
 };
 
+// Delete user
+const deleteUser = async (id) => {
+  const response = await axios.delete(`${API_URL}/users/${id}`);
+  return response.data;
+};
+
+// Delete tour
+const deleteTour = async (id) => {
+  const response = await axios.delete(`${API_URL}/tours/${id}`);
+  return response.data;
+};
+
 const adminService = {
   getSystemMetrics,
   getAllUsers,
   getAllProperties,
   getAllTours,
   disableProperty,
+  deleteUser,
+  deleteTour,
 };
 
 export default adminService;
