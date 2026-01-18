@@ -34,7 +34,7 @@ const CreatePropertyForm = ({ onSuccess, onCancel, initialData }) => {
 
   useEffect(() => {
     if (isError) {
-      toast.error(message);
+      toast.error(message, { toastId: "property-error" });
     }
 
     if (isSuccess) {
@@ -42,6 +42,7 @@ const CreatePropertyForm = ({ onSuccess, onCancel, initialData }) => {
         initialData
           ? "Draft updated successfully!"
           : "Draft created successfully!",
+        { toastId: "property-success" }, // Prevent duplicate toasts
       );
       onSuccess(); // Callback to parent to close form or refresh list
       dispatch(reset());

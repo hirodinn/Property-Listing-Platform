@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import {
@@ -74,13 +74,13 @@ const OwnerDashboard = () => {
     }
   };
 
-  const handleCreateSuccess = () => {
+  const handleCreateSuccess = useCallback(() => {
     setShowCreateForm(false);
     setEditProperty(null);
     // The propertySlice should already handle adding the new property to the state,
     // but if not, we might need to re-fetch or rely on the store update.
     // Based on slice logic: state.properties.push(action.payload) is there.
-  };
+  }, []);
 
   const handleUpdateTourStatus = (tourId, status) => {
     if (
