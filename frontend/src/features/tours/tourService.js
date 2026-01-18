@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "/api/tours";
+const API_URL = `${import.meta.env.VITE_API_URL}/tours`;
 
 // Request a tour
 const requestTour = async (tourData) => {

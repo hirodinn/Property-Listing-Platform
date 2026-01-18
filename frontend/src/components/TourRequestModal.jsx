@@ -17,7 +17,7 @@ const TourRequestModal = ({ isOpen, onClose, onSubmit, propertyTitle }) => {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
-        <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-[var(--color-primary)] text-white">
+        <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-(--color-primary) text-white">
           <h2 className="text-xl font-bold">Request a Tour</h2>
           <button
             onClick={onClose}
@@ -35,8 +35,8 @@ const TourRequestModal = ({ isOpen, onClose, onSubmit, propertyTitle }) => {
 
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
-              <FaCalendarAlt className="text-[var(--color-secondary)]" />{" "}
-              Preferred Date
+              <FaCalendarAlt className="text-(--color-secondary)" /> Preferred
+              Date
             </label>
             <input
               type="date"
@@ -50,8 +50,7 @@ const TourRequestModal = ({ isOpen, onClose, onSubmit, propertyTitle }) => {
 
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
-              <FaClock className="text-[var(--color-secondary)]" /> Preferred
-              Time
+              <FaClock className="text-(--color-secondary)" /> Preferred Time
             </label>
             <input
               type="time"
@@ -67,7 +66,7 @@ const TourRequestModal = ({ isOpen, onClose, onSubmit, propertyTitle }) => {
               Message (Optional)
             </label>
             <textarea
-              className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent outline-none transition h-24 resize-none"
+              className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-(--color-primary) focus:border-transparent outline-none transition h-24 resize-none"
               placeholder="Tell the owner when you're available or ask a question..."
               value={message}
               onChange={(e) => setMessage(e.target.value)}
@@ -76,7 +75,7 @@ const TourRequestModal = ({ isOpen, onClose, onSubmit, propertyTitle }) => {
 
           <button
             type="submit"
-            className="w-full bg-[var(--color-primary)] text-white py-4 rounded-xl font-bold hover:shadow-lg hover:shadow-[var(--color-primary)]/30 active:scale-95 transition-all duration-200"
+            className="w-full bg-(--color-primary) text-white py-4 rounded-xl font-bold hover:shadow-lg hover:shadow-(--color-primary)/30 active:scale-95 transition-all duration-200"
           >
             Confirm Request
           </button>
