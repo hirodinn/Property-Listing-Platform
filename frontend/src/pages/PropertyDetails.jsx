@@ -40,68 +40,79 @@ function PropertyDetails() {
       </button>
 
       <div className="bg-[var(--color-bg-card)] rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        {/* Images Section - Simple Grid for first 3 images for now */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 h-[400px]">
+        {/* New Header Section */}
+        <div className="p-8 border-b border-gray-100 bg-white">
+          <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+            <div>
+              <h1 className="text-4xl font-extrabold text-[var(--color-primary)] mb-3 leading-tight">
+                {property.title}
+              </h1>
+              <p className="flex items-center gap-2 text-[var(--color-text-muted)] text-xl">
+                <FaMapMarkerAlt className="text-[var(--color-secondary)]" />{" "}
+                {property.location}
+              </p>
+            </div>
+            <div className="flex flex-col items-start md:items-end gap-3">
+              <div className="text-4xl font-bold text-[var(--color-secondary)]">
+                ${property.price.toLocaleString()}
+                <span className="text-lg text-[var(--color-text-muted)] font-normal ml-1">
+                  /mo
+                </span>
+              </div>
+              <div
+                className={`px-4 py-1.5 rounded-full text-sm font-bold capitalize shadow-sm ${
+                  property.status === "published"
+                    ? "bg-green-100 text-green-700"
+                    : property.status === "pending"
+                      ? "bg-yellow-100 text-yellow-700"
+                      : "bg-gray-100 text-gray-700"
+                }`}
+              >
+                {property.status}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Images Section - Large Grid */}
+        <div className="p-8 border-b border-gray-100 bg-gray-50">
           {property.images && property.images.length > 0 ? (
-            <>
-              <div className="h-full">
-                <img
-                  src={property.images[0]}
-                  alt={property.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="grid grid-rows-2 gap-2 h-full">
-                {property.images[1] && (
+            <div
+              className={`grid gap-4 ${
+                property.images.length === 1
+                  ? "grid-cols-1"
+                  : property.images.length === 2
+                    ? "grid-cols-2"
+                    : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+              }`}
+            >
+              {property.images.map((img, index) => (
+                <div
+                  key={index}
+                  className={`relative group overflow-hidden rounded-xl shadow-sm border border-gray-200 transition-all duration-300 hover:shadow-md ${
+                    index === 0 && property.images.length > 2
+                      ? "md:col-span-2 md:row-span-2 h-[500px]"
+                      : "h-[242px]"
+                  }`}
+                >
                   <img
-                    src={property.images[1]}
-                    alt={property.title}
-                    className="w-full h-full object-cover"
+                    src={img}
+                    alt={`${property.title} - ${index + 1}`}
+                    className="w-full h-full object-cover transition duration-500 group-hover:scale-110"
                   />
-                )}
-                {property.images[2] && (
-                  <img
-                    src={property.images[2]}
-                    alt={property.title}
-                    className="w-full h-full object-cover"
-                  />
-                )}
-                {!property.images[1] && (
-                  <div className="bg-gray-100 w-full h-full"></div>
-                )}
-              </div>
-            </>
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none" />
+                </div>
+              ))}
+            </div>
           ) : (
-            <div className="bg-gray-200 w-full h-full flex items-center justify-center text-[var(--color-text-muted)] col-span-2">
+            <div className="bg-gray-200 h-[300px] flex items-center justify-center text-[var(--color-text-muted)] rounded-xl">
               No Images Available
             </div>
           )}
         </div>
 
         <div className="p-8">
-          <div className="flex flex-col md:flex-row justify-between items-start mb-6">
-            <div>
-              <h1 className="text-3xl font-bold text-[var(--color-primary)] mb-2">
-                {property.title}
-              </h1>
-              <p className="flex items-center gap-2 text-[var(--color-text-muted)] text-lg">
-                <FaMapMarkerAlt /> {property.location}
-              </p>
-            </div>
-            <div className="mt-4 md:mt-0 text-right">
-              <div className="text-3xl font-bold text-[var(--color-secondary)]">
-                ${property.price.toLocaleString()}
-                <span className="text-lg text-[var(--color-text-muted)] font-normal">
-                  /mo
-                </span>
-              </div>
-              <div className="mt-2 inline-block bg-[var(--color-accent)] text-white px-3 py-1 rounded-full text-sm font-semibold capitalize">
-                {property.status}
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             <div className="md:col-span-2">
               <h3 className="text-xl font-bold text-[var(--color-primary)] mb-4">
                 Description
