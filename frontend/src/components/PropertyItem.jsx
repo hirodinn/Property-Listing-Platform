@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { FaBed, FaBath, FaRulerCombined, FaMapMarkerAlt } from "react-icons/fa";
+import { FaMapMarkerAlt } from "react-icons/fa";
 
 function PropertyItem({ property }) {
   return (
@@ -36,25 +36,18 @@ function PropertyItem({ property }) {
           <FaMapMarkerAlt size={12} /> {property.location}
         </p>
 
-        <div className="flex items-center gap-4 text-sm text-[var(--color-text-muted)] border-t pt-3">
-          {/* Placeholder values - schema likely needs these if not present, currently just static for UI demo */}
-          <span className="flex items-center gap-1">
-            <FaBed /> 3 Beds
-          </span>
-          <span className="flex items-center gap-1">
-            <FaBath /> 2 Baths
-          </span>
-          <span className="flex items-center gap-1">
-            <FaRulerCombined /> 1,200 sqft
-          </span>
-        </div>
+        <p className="text-sm text-[var(--color-text-main)] line-clamp-2 mb-4">
+          {property.description}
+        </p>
 
-        <Link
-          to={`/property/${property._id}`}
-          className="block w-full text-center mt-4 bg-[var(--color-bg-main)] text-[var(--color-text-main)] py-2 rounded-lg hover:bg-gray-200 transition font-medium text-sm"
-        >
-          View Details
-        </Link>
+        <div className="border-t pt-3">
+          <Link
+            to={`/property/${property._id}`}
+            className="block w-full text-center bg-[var(--color-bg-main)] text-[var(--color-text-main)] py-2 rounded-lg hover:bg-gray-200 transition font-medium text-sm"
+          >
+            View Details
+          </Link>
+        </div>
       </div>
     </div>
   );

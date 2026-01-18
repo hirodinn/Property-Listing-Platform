@@ -1,15 +1,9 @@
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
-import { getProperty, reset } from "../features/properties/propertySlice";
+import { getProperty } from "../features/properties/propertySlice";
 import Spinner from "../components/Spinner";
-import {
-  FaBed,
-  FaBath,
-  FaRulerCombined,
-  FaMapMarkerAlt,
-  FaCalendarAlt,
-} from "react-icons/fa";
+import { FaMapMarkerAlt, FaCalendarAlt } from "react-icons/fa";
 
 function PropertyDetails() {
   const { id } = useParams();
@@ -105,20 +99,6 @@ function PropertyDetails() {
                 {property.status}
               </div>
             </div>
-          </div>
-
-          {/* Stats */}
-          <div className="flex gap-8 border-y border-gray-100 py-6 mb-8 text-[var(--color-text-muted)]">
-            <span className="flex items-center gap-2 text-lg">
-              <FaBed className="text-[var(--color-primary)]" /> 3 Bedrooms
-            </span>
-            <span className="flex items-center gap-2 text-lg">
-              <FaBath className="text-[var(--color-primary)]" /> 2 Bathrooms
-            </span>
-            <span className="flex items-center gap-2 text-lg">
-              <FaRulerCombined className="text-[var(--color-primary)]" /> 1,200
-              sqft
-            </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
