@@ -1,12 +1,17 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   getMyProperties,
   deleteProperty,
   publishProperty,
-  reset,
+  reset as propertiesReset,
 } from "../../features/properties/propertySlice";
+import {
+  getOwnerTours,
+  updateTourStatus,
+  reset as toursReset,
+} from "../../features/tours/tourSlice";
 import Spinner from "../Spinner";
 import {
   FaPlus,
@@ -15,23 +20,40 @@ import {
   FaEye,
   FaUpload,
   FaClock,
+  FaBuilding,
+  FaCalendarCheck,
+  FaArrowLeft,
+  FaCheck,
+  FaTimes,
+  FaMapMarkerAlt,
+  FaEnvelope,
 } from "react-icons/fa";
 import CreatePropertyForm from "./CreatePropertyForm";
 
 const OwnerDashboard = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const { properties, isLoading, isError, message } = useSelector(
-    (state) => state.properties,
+  const {
+    properties,
+    isLoading: propertiesLoading,
+    isError,
+    message,
+  } = useSelector((state) => state.properties);
+  const { tours: tourRequests, isLoading: toursLoading } = useSelector(
+    (state) => state.tours,
   );
 
+  const tours = Array.isArray(tourRequests) ? tourRequests : [];
+
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [activeView, setActiveView] = useState("overview"); // overview, properties, tours
 
   useEffect(() => {
     dispatch(getMyProperties());
+    dispatch(getOwnerTours());
 
     return () => {
-      dispatch(reset());
+      dispatch(propertiesReset());
+      dispatch(toursReset());
     };
   }, [dispatch]);
 
@@ -58,7 +80,15 @@ const OwnerDashboard = () => {
     // Based on slice logic: state.properties.push(action.payload) is there.
   };
 
-  if (isLoading) {
+  const handleUpdateTourStatus = (tourId, status) => {
+    if (
+      window.confirm(`Are you sure you want to ${status} this tour request?`)
+    ) {
+      dispatch(updateTourStatus({ tourId, status }));
+    }
+  };
+
+  if (propertiesLoading || toursLoading) {
     return <Spinner />;
   }
 
@@ -69,7 +99,7 @@ const OwnerDashboard = () => {
   const PropertyCard = ({ property }) => (
     <div className="bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition p-4 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
       <div className="flex gap-4 items-center">
-        <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-gray-200">
+        <div className="w-24 h-24 rounded-lg overflow-hidden shrink-0 bg-gray-200">
           {property.images && property.images.length > 0 ? (
             <img
               src={property.images[0]}
@@ -83,10 +113,10 @@ const OwnerDashboard = () => {
           )}
         </div>
         <div>
-          <h4 className="font-bold text-lg text-[var(--color-primary)]">
+          <h4 className="font-bold text-lg text-(--color-primary)">
             {property.title}
           </h4>
-          <p className="text-sm text-[var(--color-secondary)]">
+          <p className="text-sm text-(--color-secondary)">
             {property.location}
           </p>
           <p className="text-sm font-semibold mt-1">
@@ -123,118 +153,268 @@ const OwnerDashboard = () => {
   );
 
   return (
-    <div>
+    <div className="max-w-6xl mx-auto px-4 py-8 bg-white rounded-2xl shadow-sm border border-gray-100 min-h-[600px]">
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-3xl font-bold text-[var(--color-primary)]">
-          Owner Dashboard
-        </h2>
-        {/* We moved the create button logic to inside the Drafts section as per request, 
-            or we can keep a broader button here too. User said "in the drafts there should be a create propery"
-            so let's emphasize that one, but keeping the top one as a global action is usually good UX. 
-            However, user specifically asked to remove navigation and put it in drafts.
-            Let's keep this button but make it toggle the form in the drafts section.
-        */}
-        {!showCreateForm && (
-          <button
-            onClick={() => {
-              dispatch(reset());
-              setShowCreateForm(true);
-            }}
-            className="flex items-center gap-2 bg-[var(--color-primary)] text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition font-medium shadow-md"
-          >
-            <FaPlus /> Create New Property
-          </button>
-        )}
+        <div>
+          <h2 className="text-3xl font-extrabold text-(--color-primary)">
+            Owner Dashboard
+          </h2>
+          {activeView === "overview" && (
+            <p className="text-(--color-text-muted)">
+              Welcome to your property management hub.
+            </p>
+          )}
+        </div>
+        <div className="flex gap-4">
+          {activeView !== "overview" && (
+            <button
+              onClick={() => {
+                setActiveView("overview");
+                setShowCreateForm(false);
+              }}
+              className="flex items-center gap-2 text-gray-600 hover:text-(--color-primary) font-medium transition"
+            >
+              <FaArrowLeft /> Back to Overview
+            </button>
+          )}
+          {!showCreateForm && (
+            <button
+              onClick={() => {
+                setActiveView("properties");
+                setShowCreateForm(true);
+              }}
+              className="flex items-center gap-2 bg-(--color-primary) text-white px-5 py-2.5 rounded-lg hover:bg-opacity-90 transition font-medium shadow-md text-sm"
+            >
+              <FaPlus /> List New Property
+            </button>
+          )}
+        </div>
       </div>
 
       {isError && (
-        <div className="bg-red-100 text-red-700 p-4 rounded-lg mb-6">
+        <div className="bg-red-50 text-red-700 p-4 rounded-xl mb-6 border border-red-100">
           {message}
         </div>
       )}
 
-      <div className="space-y-10">
-        {/* Pending Approval Section */}
-        {pending.length > 0 && (
-          <section>
-            <div className="flex items-center gap-3 mb-4">
-              <h3 className="text-xl font-bold text-yellow-700">
-                Pending Approval
-              </h3>
-              <span className="bg-yellow-100 text-yellow-700 text-xs font-bold px-2 py-1 rounded-full">
-                {pending.length}
-              </span>
+      {activeView === "overview" && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Properties Card */}
+          <div
+            onClick={() => setActiveView("properties")}
+            className="bg-blue-50 p-8 rounded-2xl border border-blue-100 cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1 group"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold text-blue-800">My Properties</h3>
+              <FaBuilding className="text-3xl text-blue-300 group-hover:text-blue-500 transition" />
             </div>
-            <div className="space-y-4">
-              {pending.map((property) => (
-                <PropertyCard key={property._id} property={property} />
-              ))}
-            </div>
-          </section>
-        )}
-        {/* Drafts Section */}
-        <section>
-          <div className="flex items-center gap-3 mb-4">
-            <h3 className="text-xl font-bold text-gray-700">Drafts</h3>
-            <span className="bg-gray-200 text-gray-700 text-xs font-bold px-2 py-1 rounded-full">
-              {drafts.length}
-            </span>
-          </div>
-
-          {/* Inline Create Form */}
-          {showCreateForm && (
-            <CreatePropertyForm
-              onSuccess={handleCreateSuccess}
-              onCancel={() => setShowCreateForm(false)}
-            />
-          )}
-
-          {drafts.length > 0 ? (
-            <div className="space-y-4">
-              {drafts.map((property) => (
-                <PropertyCard key={property._id} property={property} />
-              ))}
-            </div>
-          ) : (
-            !showCreateForm && (
-              <div className="bg-gray-50 border border-dashed border-gray-300 rounded-xl p-8 text-center">
-                <p className="text-gray-500 mb-4">No drafts currently.</p>
-                <button
-                  onClick={() => {
-                    dispatch(reset());
-                    setShowCreateForm(true);
-                  }}
-                  className="inline-flex items-center gap-2 text-[var(--color-primary)] font-semibold border border-[var(--color-primary)] px-4 py-2 rounded-lg hover:bg-[var(--color-primary)] hover:text-white transition"
-                >
-                  <FaPlus /> Start a New Draft
-                </button>
-              </div>
-            )
-          )}
-        </section>
-
-        {/* Published Section */}
-        <section>
-          <div className="flex items-center gap-3 mb-4">
-            <h3 className="text-xl font-bold text-green-700">Published</h3>
-            <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded-full">
+            <p className="text-5xl font-black text-blue-600">
               {published.length}
-            </span>
+            </p>
+            <p className="text-sm text-blue-400 mt-4 font-medium">
+              View all listings &rarr;
+            </p>
           </div>
 
-          {published.length > 0 ? (
+          {/* Pending Card */}
+          <div
+            onClick={() => setActiveView("properties")}
+            className="bg-yellow-50 p-8 rounded-2xl border border-yellow-100 cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1 group"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold text-yellow-800">In Review</h3>
+              <FaClock className="text-3xl text-yellow-300 group-hover:text-yellow-500 transition" />
+            </div>
+            <p className="text-5xl font-black text-yellow-600">
+              {pending.length + drafts.length}
+            </p>
+            <p className="text-sm text-yellow-400 mt-4 font-medium">
+              Pending & drafts &rarr;
+            </p>
+          </div>
+
+          {/* Tours Card */}
+          <div
+            onClick={() => setActiveView("tours")}
+            className="bg-green-50 p-8 rounded-2xl border border-green-100 cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1 group"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold text-green-800">
+                Tour Requests
+              </h3>
+              <FaCalendarCheck className="text-3xl text-green-300 group-hover:text-green-500 transition" />
+            </div>
+            <p className="text-5xl font-black text-green-600">
+              {tours.filter((t) => t.status === "pending").length}
+            </p>
+            <p className="text-sm text-green-400 mt-4 font-medium">
+              Manage requests &rarr;
+            </p>
+          </div>
+        </div>
+      )}
+
+      {activeView === "properties" && (
+        <div className="space-y-10">
+          {showCreateForm && (
+            <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+              <CreatePropertyForm
+                onSuccess={handleCreateSuccess}
+                onCancel={() => setShowCreateForm(false)}
+              />
+            </div>
+          )}
+
+          {/* Published */}
+          <div>
+            <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
+              Published Listings
+              <span className="text-sm font-normal text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
+                {published.length}
+              </span>
+            </h3>
             <div className="space-y-4">
-              {published.map((property) => (
-                <PropertyCard key={property._id} property={property} />
+              {published.map((p) => (
+                <PropertyCard key={p._id} property={p} />
+              ))}
+              {published.length === 0 && (
+                <p className="text-gray-400 bg-gray-50 p-8 rounded-xl border border-dashed text-center">
+                  No published properties yet.
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Pending & Drafts */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div>
+              <h3 className="text-xl font-bold mb-4 text-yellow-700">
+                Pending Approval ({pending.length})
+              </h3>
+              <div className="space-y-4">
+                {pending.map((p) => (
+                  <PropertyCard key={p._id} property={p} />
+                ))}
+              </div>
+            </div>
+            <div>
+              <h3 className="text-xl font-bold mb-4 text-gray-700">
+                Drafts ({drafts.length})
+              </h3>
+              <div className="space-y-4">
+                {drafts.map((p) => (
+                  <PropertyCard key={p._id} property={p} />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeView === "tours" && (
+        <div>
+          <h3 className="text-2xl font-bold mb-8 flex items-center gap-2">
+            Incoming Tour Requests
+            <span className="text-sm font-normal text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
+              {tours.length} total
+            </span>
+          </h3>
+          {tours.length > 0 ? (
+            <div className="space-y-6">
+              {tours.map((tour) => (
+                <div
+                  key={tour._id}
+                  className="bg-white border border-gray-100 rounded-2xl p-6 flex flex-col md:flex-row gap-6 hover:shadow-md transition group"
+                >
+                  <div className="w-full md:w-32 h-24 rounded-lg overflow-hidden border border-gray-100 shrink-0">
+                    <img
+                      src={tour.property?.images?.[0] || "/placeholder.jpg"}
+                      alt={tour.property?.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="grow">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h4 className="font-bold text-gray-800">
+                          {tour.property?.title}
+                        </h4>
+                        <p className="text-xs text-gray-400 flex items-center gap-1">
+                          <FaMapMarkerAlt /> {tour.property?.location}
+                        </p>
+                      </div>
+                      <span
+                        className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                          tour.status === "accepted"
+                            ? "bg-green-100 text-green-700"
+                            : tour.status === "rejected"
+                              ? "bg-red-100 text-red-700"
+                              : "bg-blue-100 text-blue-700"
+                        }`}
+                      >
+                        {tour.status}
+                      </span>
+                    </div>
+                    <div className="flex gap-4 text-sm text-gray-600 mb-2">
+                      <p className="flex items-center gap-1.5 bg-gray-50 px-2 py-1 rounded text-xs font-medium">
+                        <FaCalendarCheck className="text-blue-400" />{" "}
+                        {tour.date}
+                      </p>
+                      <p className="flex items-center gap-1.5 bg-gray-50 px-2 py-1 rounded text-xs font-medium">
+                        <FaClock className="text-blue-400" /> {tour.time}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-3 text-xs border-t border-gray-50 pt-3 mt-3">
+                      <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center font-bold text-gray-500">
+                        {tour.user?.name.charAt(0)}
+                      </div>
+                      <p className="font-medium text-gray-700">
+                        {tour.user?.name}
+                      </p>
+                      <a
+                        href={`mailto:${tour.user?.email}`}
+                        className="text-gray-400 hover:text-(--color-primary) transition"
+                      >
+                        <FaEnvelope />
+                      </a>
+                    </div>
+                    {tour.message && (
+                      <p className="mt-3 text-xs text-gray-500 italic bg-gray-50 p-2 rounded">
+                        "{tour.message}"
+                      </p>
+                    )}
+                  </div>
+                  {tour.status === "pending" && (
+                    <div className="flex md:flex-col gap-2 justify-center border-l border-gray-50 pl-6">
+                      <button
+                        onClick={() =>
+                          handleUpdateTourStatus(tour._id, "accepted")
+                        }
+                        className="flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-green-700 transition"
+                      >
+                        <FaCheck /> Accept
+                      </button>
+                      <button
+                        onClick={() =>
+                          handleUpdateTourStatus(tour._id, "rejected")
+                        }
+                        className="flex items-center justify-center gap-2 bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm font-bold hover:bg-red-200 transition"
+                      >
+                        <FaTimes /> Decline
+                      </button>
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
           ) : (
-            <div className="text-gray-400 italic p-4 border border-gray-100 rounded-lg text-center">
-              No published properties yet.
+            <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-3xl p-16 text-center text-gray-400">
+              <FaCalendarCheck className="w-16 h-16 mx-auto mb-4 opacity-20" />
+              <p>No tour requests yet.</p>
             </div>
           )}
-        </section>
-      </div>
+        </div>
+      )}
     </div>
   );
 };

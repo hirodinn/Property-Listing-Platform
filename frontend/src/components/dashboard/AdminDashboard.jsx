@@ -91,13 +91,13 @@ const AdminDashboard = () => {
   return (
     <div className="bg-white p-6 rounded-lg shadow-md min-h-[500px]">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-[var(--color-primary)]">
+        <h2 className="text-2xl font-bold text-(--color-primary)">
           Admin Dashboard
         </h2>
         {activeView !== "overview" && (
           <button
             onClick={() => setActiveView("overview")}
-            className="flex items-center gap-2 text-gray-600 hover:text-[var(--color-primary)] font-medium"
+            className="flex items-center gap-2 text-gray-600 hover:text-(--color-primary) font-medium"
           >
             <FaArrowLeft /> Back to Overview
           </button>

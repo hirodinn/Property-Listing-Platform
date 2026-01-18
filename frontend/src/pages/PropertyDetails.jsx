@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import { getProperty } from "../features/properties/propertySlice";
@@ -17,6 +17,8 @@ import {
   rejectProperty,
 } from "../features/properties/propertySlice";
 import { toggleFavorite } from "../features/auth/authSlice";
+import { requestTour } from "../features/tours/tourSlice";
+import TourRequestModal from "../components/TourRequestModal";
 
 function PropertyDetails() {
   const { id } = useParams();
@@ -27,6 +29,8 @@ function PropertyDetails() {
   const { property, isLoading, isError, message } = useSelector(
     (state) => state.properties,
   );
+
+  const [isTourModalOpen, setIsTourModalOpen] = useState(false);
 
   useEffect(() => {
     if (isError) {
@@ -74,6 +78,20 @@ function PropertyDetails() {
     dispatch(toggleFavorite(id));
   };
 
+  const handleTourSubmit = async (tourData) => {
+    try {
+      await dispatch(
+        requestTour({
+          propertyId: id,
+          ...tourData,
+        }),
+      ).unwrap();
+      toast.success("Tour request sent successfully!");
+    } catch (err) {
+      toast.error(err || "Failed to send tour request");
+    }
+  };
+
   if (isLoading || !property) {
     return <Spinner />;
   }
@@ -82,28 +100,28 @@ function PropertyDetails() {
     <div className="max-w-6xl mx-auto px-4">
       <button
         onClick={() => navigate(-1)}
-        className="mb-6 text-[var(--color-primary)] hover:underline flex items-center gap-1 font-medium"
+        className="mb-6 text-(--color-primary) hover:underline flex items-center gap-1 font-medium"
       >
         &larr; Back to Properties
       </button>
 
-      <div className="bg-[var(--color-bg-card)] rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-(--color-bg-card) rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         {/* New Header Section */}
         <div className="p-8 border-b border-gray-100 bg-white">
           <div className="flex flex-col md:flex-row justify-between items-start gap-4">
             <div>
-              <h1 className="text-4xl font-extrabold text-[var(--color-primary)] mb-3 leading-tight">
+              <h1 className="text-4xl font-extrabold text-(--color-primary) mb-3 leading-tight">
                 {property.title}
               </h1>
-              <p className="flex items-center gap-2 text-[var(--color-text-muted)] text-xl">
-                <FaMapMarkerAlt className="text-[var(--color-secondary)]" />{" "}
+              <p className="flex items-center gap-2 text-(--color-text-muted) text-xl">
+                <FaMapMarkerAlt className="text-(--color-secondary)" />{" "}
                 {property.location}
               </p>
             </div>
             <div className="flex flex-col items-start md:items-end gap-3">
-              <div className="text-4xl font-bold text-[var(--color-secondary)]">
+              <div className="text-4xl font-bold text-(--color-secondary)">
                 ${property.price.toLocaleString()}
-                <span className="text-lg text-[var(--color-text-muted)] font-normal ml-1">
+                <span className="text-lg text-(--color-text-muted) font-normal ml-1">
                   /mo
                 </span>
               </div>
@@ -157,7 +175,7 @@ function PropertyDetails() {
               ))}
             </div>
           ) : (
-            <div className="bg-gray-200 h-[300px] flex items-center justify-center text-[var(--color-text-muted)] rounded-xl">
+            <div className="bg-gray-200 h-[300px] flex items-center justify-center text-(--color-text-muted) rounded-xl">
               No Images Available
             </div>
           )}
@@ -166,17 +184,17 @@ function PropertyDetails() {
         <div className="p-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             <div className="md:col-span-2">
-              <h3 className="text-xl font-bold text-[var(--color-primary)] mb-4">
+              <h3 className="text-xl font-bold text-(--color-primary) mb-4">
                 Description
               </h3>
-              <p className="text-[var(--color-text-main)] leading-relaxed whitespace-pre-wrap">
+              <p className="text-(--color-text-main) leading-relaxed whitespace-pre-wrap">
                 {property.description}
               </p>
             </div>
 
             {/* Sidebar / Owner Info or Contact */}
-            <div className="bg-[var(--color-bg-main)] p-6 rounded-lg h-fit">
-              <h3 className="text-lg font-bold text-[var(--color-primary)] mb-4">
+            <div className="bg-(--color-bg-main) p-6 rounded-lg h-fit">
+              <h3 className="text-lg font-bold text-(--color-primary) mb-4">
                 Contact Agent
               </h3>
               {property.owner ? (
@@ -185,16 +203,16 @@ function PropertyDetails() {
                     {property.owner.name.charAt(0)}
                   </div>
                   <div>
-                    <p className="font-bold text-[var(--color-text-main)]">
+                    <p className="font-bold text-(--color-text-main)">
                       {property.owner.name}
                     </p>
-                    <p className="text-sm text-[var(--color-text-muted)]">
+                    <p className="text-sm text-(--color-text-muted)">
                       {property.owner.email}
                     </p>
                   </div>
                 </div>
               ) : (
-                <p className="text-[var(--color-text-muted)] mb-4">
+                <p className="text-(--color-text-muted) mb-4">
                   Owner information not available.
                 </p>
               )}
@@ -218,14 +236,19 @@ function PropertyDetails() {
                       </button>
                     </div>
                   )}
-                  <p className="text-center text-xs text-[var(--color-text-muted)] italic">
+                  <p className="text-center text-xs text-(--color-text-muted) italic">
                     Managing as {user.role}
                   </p>
                 </div>
               ) : (
-                <button className="w-full bg-[var(--color-primary)] text-white py-3 rounded-lg font-bold hover:bg-opacity-90 transition">
-                  Request a Tour
-                </button>
+                user?.role === "user" && (
+                  <button
+                    onClick={() => setIsTourModalOpen(true)}
+                    className="w-full bg-(--color-primary) text-white py-3 rounded-lg font-bold hover:bg-opacity-90 transition"
+                  >
+                    Request a Tour
+                  </button>
+                )
               )}
 
               {/* Favorites Action - Restricted to normal users */}
@@ -235,7 +258,7 @@ function PropertyDetails() {
                   className={`w-full mt-3 py-3 rounded-lg font-bold border-2 transition flex items-center justify-center gap-2 ${
                     isFavorited
                       ? "border-amber-500 text-amber-500 hover:bg-amber-50"
-                      : "border-gray-200 text-[var(--color-text-main)] hover:bg-gray-50"
+                      : "border-gray-200 text-(--color-text-main) hover:bg-gray-50"
                   }`}
                 >
                   {isFavorited ? (
@@ -257,6 +280,13 @@ function PropertyDetails() {
           </div>
         </div>
       </div>
+
+      <TourRequestModal
+        isOpen={isTourModalOpen}
+        onClose={() => setIsTourModalOpen(false)}
+        onSubmit={handleTourSubmit}
+        propertyTitle={property.title}
+      />
     </div>
   );
 }

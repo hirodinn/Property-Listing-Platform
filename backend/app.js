@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import authRoutes from "./routes/authRoutes.js";
 import propertyRoutes from "./routes/propertyRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import tourRoutes from "./routes/tourRoutes.js";
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use(
 app.use("/api/auth", authRoutes);
 app.use("/api/properties", propertyRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/tours", tourRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running...");
