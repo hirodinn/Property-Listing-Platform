@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout, reset } from "../features/auth/authSlice";
-import { FaUserCircle, FaSignOutAlt, FaBuilding, FaHome } from "react-icons/fa";
+import { FaUserCircle, FaSignOutAlt, FaBuilding } from "react-icons/fa";
 
 function Header() {
   const navigate = useNavigate();
@@ -27,17 +27,6 @@ function Header() {
           </div>
           PropVault
         </Link>
-
-        {/* Navigation */}
-        <nav className="flex items-center gap-4 md:gap-8 font-medium text-(--color-text-muted)">
-          <Link
-            to="/"
-            className="flex items-center gap-1 hover:text-(--color-primary) transition"
-          >
-            <FaHome className="text-xl md:text-base" />
-            <span className="hidden md:inline">Home</span>
-          </Link>
-        </nav>
 
         {/* Auth Buttons */}
         <div className="flex items-center gap-4">
