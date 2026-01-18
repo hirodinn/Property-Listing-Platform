@@ -74,13 +74,13 @@ function PropertyDetails() {
           </div>
         </div>
 
-        {/* Images Section - Large Grid */}
+        {/* Images Section - Dynamic Grid based on image count */}
         <div className="p-8 border-b border-gray-100 bg-gray-50">
           {property.images && property.images.length > 0 ? (
             <div
               className={`grid gap-4 ${
                 property.images.length === 1
-                  ? "grid-cols-1"
+                  ? "grid-cols-1 max-w-4xl mx-auto"
                   : property.images.length === 2
                     ? "grid-cols-2"
                     : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
@@ -90,9 +90,13 @@ function PropertyDetails() {
                 <div
                   key={index}
                   className={`relative group overflow-hidden rounded-xl shadow-sm border border-gray-200 transition-all duration-300 hover:shadow-md ${
-                    index === 0 && property.images.length > 2
-                      ? "md:col-span-2 md:row-span-2 h-[500px]"
-                      : "h-[242px]"
+                    property.images.length === 1
+                      ? "h-[600px]"
+                      : index === 0 && property.images.length > 2
+                        ? "md:col-span-2 md:row-span-2 h-[500px]"
+                        : property.images.length === 2
+                          ? "h-[400px]"
+                          : "h-[242px]"
                   }`}
                 >
                   <img
