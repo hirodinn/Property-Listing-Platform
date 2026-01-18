@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout, reset } from "../features/auth/authSlice";
-import { FaUserCircle, FaSignOutAlt, FaBuilding } from "react-icons/fa";
+import { FaUserCircle, FaSignOutAlt, FaBuilding, FaHome } from "react-icons/fa";
 
 function Header() {
   const navigate = useNavigate();
@@ -29,40 +29,34 @@ function Header() {
         </Link>
 
         {/* Navigation */}
-        <nav className="hidden md:flex items-center gap-8 font-medium text-[var(--color-text-muted)]">
-          <Link to="/" className="hover:text-[var(--color-primary)] transition">
-            Home
-          </Link>
+        <nav className="flex items-center gap-4 md:gap-8 font-medium text-[var(--color-text-muted)]">
           <Link
-            to="/properties"
-            className="hover:text-[var(--color-primary)] transition"
+            to="/"
+            className="flex items-center gap-1 hover:text-[var(--color-primary)] transition"
           >
-            Properties
+            <FaHome className="text-xl md:text-base" />
+            <span className="hidden md:inline">Home</span>
           </Link>
-          {user && <div className="hidden"></div>}
         </nav>
 
         {/* Auth Buttons */}
         <div className="flex items-center gap-4">
           {user ? (
-            <div className="flex items-center gap-4">
-              <span className="text-[var(--color-text-main)] font-medium hidden sm:block">
-                Hi, {user.name}
-              </span>
-              <>
-                <Link
-                  to="/dashboard"
-                  className="flex items-center gap-1 hover:text-[var(--color-secondary)] transition"
-                >
-                  <FaUserCircle /> Dashboard
-                </Link>
-                <button
-                  onClick={onLogout}
-                  className="flex items-center gap-2 text-[var(--color-text-muted)] hover:text-red-500 transition"
-                >
-                  <FaSignOutAlt /> Logout
-                </button>
-              </>
+            <div className="flex items-center gap-6">
+              <Link
+                to="/dashboard"
+                className="flex items-center gap-1 hover:text-[var(--color-secondary)] transition text-[var(--color-text-main)] font-medium"
+              >
+                <FaUserCircle className="text-xl md:text-base" />
+                <span className="hidden md:inline">Dashboard</span>
+              </Link>
+              <button
+                onClick={onLogout}
+                className="flex items-center gap-2 text-[var(--color-text-muted)] hover:text-red-500 transition font-medium"
+              >
+                <FaSignOutAlt className="text-xl md:text-base" />
+                <span className="hidden md:inline">Logout</span>
+              </button>
             </div>
           ) : (
             <>

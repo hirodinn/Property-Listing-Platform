@@ -27,17 +27,10 @@ function App() {
         <Header />
         <div className="container mx-auto px-4 py-8">
           <Routes>
-            <Route
-              path="/"
-              element={
-                <h1 className="text-3xl font-bold underline text-center mt-10 text-[var(--color-text-main)]">
-                  Welcome to PropVault
-                </h1>
-              }
-            />
+            <Route path="/" element={<Properties />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/properties" element={<Properties />} />
+            <Route path="/property/:id" element={<PropertyDetails />} />
             <Route path="/property/:id" element={<PropertyDetails />} />
 
             {/* Protected Routes */}
