@@ -394,10 +394,10 @@ const OwnerDashboard = () => {
                     </div>
                     <div className="flex items-center gap-3 text-xs border-t border-gray-50 pt-3 mt-3">
                       <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center font-bold text-gray-500">
-                        {tour.user?.name.charAt(0)}
+                        {tour.user?.name?.charAt(0) || "?"}
                       </div>
                       <p className="font-medium text-gray-700">
-                        {tour.user?.name}
+                        {tour.user?.name || "Anonymous User"}
                       </p>
                       <a
                         href={`mailto:${tour.user?.email}`}

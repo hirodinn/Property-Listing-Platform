@@ -74,7 +74,13 @@ const updateTourStatus = asyncHandler(async (req, res) => {
 
   tour.status = status || tour.status;
 
-  const updatedTour = await tour.save();
+  await tour.save();
+
+  // Fetch populated tour to return to frontend
+  const updatedTour = await Tour.findById(req.params.id)
+    .populate("property", "title location images")
+    .populate("user", "name email");
+
   res.json(updatedTour);
 });
 
