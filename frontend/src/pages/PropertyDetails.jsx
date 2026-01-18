@@ -3,13 +3,24 @@ import { useSelector, useDispatch } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import { getProperty } from "../features/properties/propertySlice";
 import Spinner from "../components/Spinner";
-import { FaMapMarkerAlt, FaCalendarAlt } from "react-icons/fa";
+import {
+  FaMapMarkerAlt,
+  FaCalendarAlt,
+  FaCheck,
+  FaTimes,
+} from "react-icons/fa";
+import { toast } from "react-toastify";
+import {
+  approveProperty,
+  rejectProperty,
+} from "../features/properties/propertySlice";
 
 function PropertyDetails() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const { user } = useSelector((state) => state.auth);
   const { property, isLoading, isError, message } = useSelector(
     (state) => state.properties,
   );
@@ -25,6 +36,30 @@ function PropertyDetails() {
     // Actually reset() clears everything including list. We might want a clearCurrentProperty action
     // But for now, let's keep it simple.
   }, [dispatch, id, isError, message]);
+
+  const handleApprove = async () => {
+    if (window.confirm("Are you sure you want to approve this property?")) {
+      try {
+        await dispatch(approveProperty(id)).unwrap();
+        toast.success("Property approved successfully");
+        navigate("/dashboard");
+      } catch (err) {
+        toast.error(err || "Failed to approve property");
+      }
+    }
+  };
+
+  const handleReject = async () => {
+    if (window.confirm("Are you sure you want to reject this property?")) {
+      try {
+        await dispatch(rejectProperty(id)).unwrap();
+        toast.success("Property rejected and moved to drafts");
+        navigate("/dashboard");
+      } catch (err) {
+        toast.error(err || "Failed to reject property");
+      }
+    }
+  };
 
   if (isLoading || !property) {
     return <Spinner />;
@@ -151,9 +186,35 @@ function PropertyDetails() {
                 </p>
               )}
 
-              <button className="w-full bg-[var(--color-primary)] text-white py-3 rounded-lg font-bold hover:bg-opacity-90 transition">
-                Request a Tour
-              </button>
+              {/* Actions Section */}
+              {user && (user.role === "admin" || user.role === "owner") ? (
+                <div className="space-y-3">
+                  {user.role === "admin" && property.status === "pending" && (
+                    <div className="flex gap-2">
+                      <button
+                        onClick={handleApprove}
+                        className="flex-1 bg-green-600 text-white py-3 rounded-lg font-bold hover:bg-green-700 transition flex items-center justify-center gap-2"
+                      >
+                        <FaCheck /> Approve
+                      </button>
+                      <button
+                        onClick={handleReject}
+                        className="flex-1 bg-red-600 text-white py-3 rounded-lg font-bold hover:bg-red-700 transition flex items-center justify-center gap-2"
+                      >
+                        <FaTimes /> Reject
+                      </button>
+                    </div>
+                  )}
+                  <p className="text-center text-xs text-[var(--color-text-muted)] italic">
+                    Managing as {user.role}
+                  </p>
+                </div>
+              ) : (
+                <button className="w-full bg-[var(--color-primary)] text-white py-3 rounded-lg font-bold hover:bg-opacity-90 transition">
+                  Request a Tour
+                </button>
+              )}
+
               <p className="text-center text-xs text-[var(--color-text-muted)] mt-2">
                 Posted on {new Date(property.createdAt).toLocaleDateString()}
               </p>

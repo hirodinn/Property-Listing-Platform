@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate, Link } from "react-router-dom";
 import {
   getSystemMetrics,
   getAllUsers,
@@ -22,6 +23,7 @@ import {
 } from "../../features/properties/propertySlice";
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const {
     usersCount,
@@ -277,10 +279,11 @@ const AdminDashboard = () => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                  <th className="py-3 px-6">Photo</th>
                   <th className="py-3 px-6">Title</th>
                   <th className="py-3 px-6">Owner</th>
                   <th className="py-3 px-6">Price</th>
-                  <th className="py-3 px-6">Actions</th>
+                  <th className="py-3 px-6 text-center">Action</th>
                 </tr>
               </thead>
               <tbody className="text-gray-600 text-sm font-light">
@@ -292,8 +295,24 @@ const AdminDashboard = () => {
                     .map((property) => (
                       <tr
                         key={property._id}
-                        className="border-b border-gray-200 hover:bg-gray-50"
+                        onClick={() => navigate(`/property/${property._id}`)}
+                        className="border-b border-gray-200 hover:bg-blue-50 cursor-pointer transition"
                       >
+                        <td className="py-3 px-6">
+                          <div className="w-16 h-12 bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
+                            {property.images?.[0] ? (
+                              <img
+                                src={property.images[0]}
+                                alt={property.title}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-400">
+                                No Image
+                              </div>
+                            )}
+                          </div>
+                        </td>
                         <td className="py-3 px-6 whitespace-nowrap font-medium">
                           {property.title}
                         </td>
@@ -303,23 +322,8 @@ const AdminDashboard = () => {
                         <td className="py-3 px-6">
                           ${property.price.toLocaleString()}
                         </td>
-                        <td className="py-3 px-6">
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => handleApprove(property._id)}
-                              className="bg-green-100 text-green-600 p-2 rounded-lg hover:bg-green-200 transition"
-                              title="Approve"
-                            >
-                              <FaCheck />
-                            </button>
-                            <button
-                              onClick={() => handleReject(property._id)}
-                              className="bg-red-100 text-red-600 p-2 rounded-lg hover:bg-red-200 transition"
-                              title="Reject"
-                            >
-                              <FaTimes />
-                            </button>
-                          </div>
+                        <td className="py-3 px-6 text-center text-blue-600 font-medium">
+                          Review &rarr;
                         </td>
                       </tr>
                     ))
