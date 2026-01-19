@@ -1,5 +1,3 @@
-import path from "path";
-import { fileURLToPath } from "url";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -94,23 +92,10 @@ app.use("/api/properties", propertyRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/tours", tourRoutes);
 
-// Serve Frontend in Production
-if (process.env.NODE_ENV === "production") {
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path.dirname(__filename);
-  const frontendPath = path.join(__dirname, "../frontend/dist");
-
-  app.use(express.static(frontendPath));
-
-  // Catch-all: If not an /api route, serve the frontend
-  app.get(/^(?!\/api).*/, (req, res) =>
-    res.sendFile(path.resolve(frontendPath, "index.html")),
-  );
-} else {
-  app.get("/", (req, res) => {
-    res.send("API is running...");
-  });
-}
+// Basic root route
+app.get("/", (req, res) => {
+  res.send("API is running...");
+});
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {
