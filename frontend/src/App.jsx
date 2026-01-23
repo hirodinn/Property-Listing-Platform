@@ -31,7 +31,6 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/property/:id" element={<PropertyDetails />} />
-            <Route path="/property/:id" element={<PropertyDetails />} />
 
             {/* Protected Routes */}
             <Route element={<PrivateRoute />}>
