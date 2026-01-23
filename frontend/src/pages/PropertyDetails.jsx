@@ -18,6 +18,7 @@ import {
   approveProperty,
   rejectProperty,
   deleteProperty,
+  archiveProperty,
 } from "../features/properties/propertySlice";
 import { disableProperty } from "../features/admin/adminSlice"; // Assuming disableProperty is exported from adminSlice
 import { toggleFavorite } from "../features/auth/authSlice";
@@ -93,9 +94,9 @@ function PropertyDetails() {
           await dispatch(disableProperty(id)).unwrap();
           toast.success("Property disabled successfully");
         } else {
-          // For owners, we might need archiveProperty logic or reuse disableProperty
-          await dispatch(disableProperty(id)).unwrap();
-          toast.success("Property status updated");
+          // For owners, use archiveProperty from propertySlice
+          await dispatch(archiveProperty(id)).unwrap();
+          toast.success("Property archived successfully");
         }
         dispatch(getProperty(id)); // Refresh details
       } catch (err) {
