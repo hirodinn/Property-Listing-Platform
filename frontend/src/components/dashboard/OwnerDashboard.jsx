@@ -204,8 +204,11 @@ const OwnerDashboard = () => {
           {!showCreateForm && (
             <button
               onClick={() => setShowCreateForm(true)}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-white transition hover:opacity-95 active:scale-[0.98]"
-              style={{ backgroundColor: "var(--color-primary)" }}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold transition hover:opacity-95 active:scale-[0.98]"
+              style={{
+                backgroundColor: "var(--color-primary)",
+                color: "var(--color-text-light)",
+              }}
             >
               <FaPlus /> List New Property
             </button>

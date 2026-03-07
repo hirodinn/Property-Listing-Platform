@@ -78,8 +78,11 @@ function Properties() {
         </div>
         <button
           type="submit"
-          className="px-6 py-3.5 rounded-xl font-semibold text-white transition-all hover:opacity-95 active:scale-[0.98] shrink-0"
-          style={{ backgroundColor: "var(--color-primary)" }}
+          className="px-6 py-3.5 rounded-xl font-semibold transition-all hover:opacity-95 active:scale-[0.98] shrink-0"
+          style={{
+            backgroundColor: "var(--color-primary)",
+            color: "var(--color-text-light)",
+          }}
         >
           Search
         </button>

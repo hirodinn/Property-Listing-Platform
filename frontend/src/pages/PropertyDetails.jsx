@@ -283,13 +283,20 @@ function PropertyDetails() {
                     </div>
                   )}
 
-                  {property.status === "published" && (
+                  {property.status === "published" && user.role === "admin" && (
                     <button
                       onClick={handleDisable}
                       className="w-full py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 bg-blue-500/15 text-blue-600 dark:text-blue-400 hover:bg-blue-500/25"
                     >
-                      <FaArchive />{" "}
-                      {user.role === "admin" ? "Disable Property" : "Archive Property"}
+                      <FaArchive /> Disable Property
+                    </button>
+                  )}
+                  {property.status === "published" && user.role === "owner" && property.owner && property.owner._id === user._id && (
+                    <button
+                      onClick={handleDisable}
+                      className="w-full py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 bg-blue-500/15 text-blue-600 dark:text-blue-400 hover:bg-blue-500/25"
+                    >
+                      <FaArchive /> Archive Property
                     </button>
                   )}
 
