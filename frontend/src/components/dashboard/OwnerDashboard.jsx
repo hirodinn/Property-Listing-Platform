@@ -45,15 +45,13 @@ const OwnerDashboard = () => {
   );
 
   const tours = Array.isArray(tourRequests) ? tourRequests : [];
-
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editProperty, setEditProperty] = useState(null);
-  const [activeView, setActiveView] = useState("overview"); // overview, drafts, pending, posted, tours
+  const [activeView, setActiveView] = useState("overview");
 
   useEffect(() => {
     dispatch(getMyProperties());
     dispatch(getOwnerTours());
-
     return () => {
       dispatch(propertiesReset());
       dispatch(toursReset());
@@ -73,11 +71,7 @@ const OwnerDashboard = () => {
   };
 
   const handlePublish = (id) => {
-    if (
-      window.confirm(
-        "Are you ready to publish this property? It will be visible to everyone.",
-      )
-    ) {
+    if (window.confirm("Are you ready to publish this property? It will be visible to everyone.")) {
       dispatch(publishProperty(id));
     }
   };
@@ -85,15 +79,10 @@ const OwnerDashboard = () => {
   const handleCreateSuccess = useCallback(() => {
     setShowCreateForm(false);
     setEditProperty(null);
-    // The propertySlice should already handle adding the new property to the state,
-    // but if not, we might need to re-fetch or rely on the store update.
-    // Based on slice logic: state.properties.push(action.payload) is there.
   }, []);
 
   const handleUpdateTourStatus = (tourId, status) => {
-    if (
-      window.confirm(`Are you sure you want to ${status} this tour request?`)
-    ) {
+    if (window.confirm(`Are you sure you want to ${status} this tour request?`)) {
       dispatch(updateTourStatus({ tourId, status }));
     }
   };
@@ -107,74 +96,73 @@ const OwnerDashboard = () => {
   const published = properties.filter((p) => p.status === "published");
   const archived = properties.filter((p) => p.status === "archived");
 
+  const StatCard = ({ onClick, title, count, sub, icon: Icon, colors }) => (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`text-left p-6 rounded-2xl border-2 border-transparent hover:shadow-lg transition group ${colors}`}
+    >
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="text-lg font-bold">{title}</h3>
+        <Icon className="text-2xl opacity-80 group-hover:scale-110 transition" />
+      </div>
+      <p className="text-3xl font-black">{count}</p>
+      <p className="text-xs font-medium mt-2 opacity-80">{sub}</p>
+    </button>
+  );
+
   const PropertyCard = ({ property }) => (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition p-4 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
-      <div className="flex gap-4 items-center">
-        <div className="w-24 h-24 rounded-lg overflow-hidden shrink-0 bg-gray-200">
-          {property.images && property.images.length > 0 ? (
-            <img
-              src={property.images[0]}
-              alt={property.title}
-              className="w-full h-full object-cover"
-            />
+    <div
+      className="rounded-xl border p-4 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between"
+      style={{ backgroundColor: "var(--color-bg-main)", borderColor: "var(--color-border)" }}
+    >
+      <div className="flex gap-4 items-center min-w-0">
+        <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0 bg-[var(--color-bg-elevated)]">
+          {property.images?.[0] ? (
+            <img src={property.images[0]} alt={property.title} className="w-full h-full object-cover" />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
-              No Image
-            </div>
+            <div className="w-full h-full flex items-center justify-center text-xs" style={{ color: "var(--color-text-muted)" }}>No Image</div>
           )}
         </div>
-        <div>
-          <h4 className="font-bold text-lg text-(--color-primary)">
-            {property.title}
-          </h4>
-          <p className="text-sm text-(--color-secondary)">
-            {property.location}
-          </p>
-          <p className="text-sm font-semibold mt-1">
-            ${property.price.toLocaleString()}
-          </p>
+        <div className="min-w-0">
+          <h4 className="font-bold truncate" style={{ color: "var(--color-primary)" }}>{property.title}</h4>
+          <p className="text-sm truncate" style={{ color: "var(--color-secondary)" }}>{property.location}</p>
+          <p className="text-sm font-semibold mt-1" style={{ color: "var(--color-text-main)" }}>${property.price.toLocaleString()}</p>
         </div>
       </div>
-
-      <div className="flex gap-3 mt-4 md:mt-0 w-full md:w-auto">
+      <div className="flex flex-wrap gap-2 w-full md:w-auto">
         <Link
           to={`/property/${property._id}`}
-          className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 font-medium text-sm"
+          className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium text-sm bg-blue-500/15 text-blue-600 dark:text-blue-400 hover:bg-blue-500/25"
         >
           <FaEye /> View
         </Link>
-
         {property.status === "draft" && (
           <>
             <button
-              onClick={() => {
-                setEditProperty(property);
-                setShowCreateForm(true);
-                setActiveView("drafts");
-              }}
-              className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-yellow-50 text-yellow-600 rounded-lg hover:bg-yellow-100 font-medium text-sm"
+              onClick={() => { setEditProperty(property); setShowCreateForm(true); setActiveView("drafts"); }}
+              className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium text-sm bg-amber-500/15 text-amber-600 dark:text-amber-400 hover:bg-amber-500/25"
             >
               <FaPen /> Edit
             </button>
             <button
               onClick={() => handlePublish(property._id)}
-              className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 font-medium text-sm"
+              className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium text-sm bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/25"
             >
               <FaUpload /> Publish
             </button>
             <button
               onClick={() => handleDelete(property._id)}
-              className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 font-medium text-sm"
+              className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium text-sm bg-red-500/15 text-red-600 dark:text-red-400 hover:bg-red-500/25"
             >
               <FaTrash /> Delete
             </button>
           </>
         )}
-
         {property.status === "published" && (
           <button
             onClick={() => handleArchive(property._id)}
-            className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 font-medium text-sm"
+            className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium text-sm bg-blue-500/15 text-blue-600 dark:text-blue-400 hover:bg-blue-500/25"
           >
             <FaArchive /> Archive
           </button>
@@ -184,38 +172,40 @@ const OwnerDashboard = () => {
   );
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 bg-white rounded-2xl shadow-sm border border-gray-100 min-h-[600px]">
-      <div className="flex justify-between items-center mb-8">
+    <div
+      className="rounded-2xl border min-h-[600px] p-6 sm:p-8"
+      style={{
+        backgroundColor: "var(--color-bg-card)",
+        borderColor: "var(--color-border)",
+        boxShadow: "var(--shadow-card)",
+      }}
+    >
+      <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
         <div>
-          <h2 className="text-3xl font-extrabold text-(--color-primary)">
+          <h2 className="text-2xl sm:text-3xl font-extrabold" style={{ color: "var(--color-primary)" }}>
             Owner Dashboard
           </h2>
           {activeView === "overview" && (
-            <p className="text-(--color-text-muted)">
+            <p className="mt-1" style={{ color: "var(--color-text-muted)" }}>
               Welcome to your property management hub.
             </p>
           )}
         </div>
-        <div className="flex gap-4">
+        <div className="flex flex-wrap gap-3">
           {activeView !== "overview" && (
             <button
-              onClick={() => {
-                setActiveView("overview");
-                setShowCreateForm(false);
-                setEditProperty(null);
-              }}
-              className="flex items-center gap-2 text-gray-600 hover:text-(--color-primary) font-medium transition"
+              onClick={() => { setActiveView("overview"); setShowCreateForm(false); setEditProperty(null); }}
+              className="flex items-center gap-2 font-semibold hover:opacity-80 transition"
+              style={{ color: "var(--color-secondary)" }}
             >
               <FaArrowLeft /> Back to Overview
             </button>
           )}
           {!showCreateForm && (
             <button
-              onClick={() => {
-                setActiveView("drafts"); // Default to drafts when creating? Or maybe just keep it simple.
-                setShowCreateForm(true);
-              }}
-              className="flex items-center gap-2 bg-(--color-primary) text-white px-5 py-2.5 rounded-lg hover:bg-opacity-90 transition font-medium shadow-md text-sm"
+              onClick={() => setShowCreateForm(true)}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-white transition hover:opacity-95 active:scale-[0.98]"
+              style={{ backgroundColor: "var(--color-primary)" }}
             >
               <FaPlus /> List New Property
             </button>
@@ -224,107 +214,27 @@ const OwnerDashboard = () => {
       </div>
 
       {isError && (
-        <div className="bg-red-50 text-red-700 p-4 rounded-xl mb-6 border border-red-100">
+        <div className="rounded-xl p-4 mb-6 border border-red-300 bg-red-500/10 text-red-700 dark:text-red-300">
           {message}
         </div>
       )}
 
       {activeView === "overview" && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Drafts Card */}
-          <div
-            onClick={() => setActiveView("drafts")}
-            className="bg-gray-50 p-6 rounded-2xl border border-gray-100 cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1 group"
-          >
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-lg font-bold text-gray-800">My Drafts</h3>
-              <FaPen className="text-2xl text-gray-300 group-hover:text-gray-500 transition" />
-            </div>
-            <p className="text-4xl font-black text-gray-600">{drafts.length}</p>
-            <p className="text-xs text-gray-400 mt-2 font-medium">
-              Finish listing &rarr;
-            </p>
-          </div>
-
-          {/* Pending Card */}
-          <div
-            onClick={() => setActiveView("pending")}
-            className="bg-amber-50 p-6 rounded-2xl border border-amber-100 cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1 group"
-          >
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-lg font-bold text-amber-800">Pending</h3>
-              <FaClock className="text-2xl text-amber-300 group-hover:text-amber-500 transition" />
-            </div>
-            <p className="text-4xl font-black text-amber-600">
-              {pending.length}
-            </p>
-            <p className="text-xs text-amber-400 mt-2 font-medium">
-              Awaiting review &rarr;
-            </p>
-          </div>
-
-          {/* Posted Card */}
-          <div
-            onClick={() => setActiveView("posted")}
-            className="bg-green-50 p-6 rounded-2xl border border-green-100 cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1 group"
-          >
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-lg font-bold text-green-800">Posted</h3>
-              <FaBuilding className="text-2xl text-green-300 group-hover:text-green-500 transition" />
-            </div>
-            <p className="text-4xl font-black text-green-600">
-              {published.length}
-            </p>
-            <p className="text-xs text-green-400 mt-2 font-medium">
-              Live listings &rarr;
-            </p>
-          </div>
-
-          {/* Archived Card */}
-          <div
-            onClick={() => setActiveView("archived")}
-            className="bg-blue-50 p-6 rounded-2xl border border-blue-100 cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1 group"
-          >
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-lg font-bold text-blue-800">Archived</h3>
-              <FaArchive className="text-2xl text-blue-300 group-hover:text-blue-500 transition" />
-            </div>
-            <p className="text-4xl font-black text-blue-600">
-              {archived.length}
-            </p>
-            <p className="text-xs text-blue-400 mt-2 font-medium">
-              Archived listings &rarr;
-            </p>
-          </div>
-
-          {/* Tours Card */}
-          <div
-            onClick={() => setActiveView("tours")}
-            className="bg-purple-50 p-6 rounded-2xl border border-purple-100 cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1 group"
-          >
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-lg font-bold text-purple-800">Tours</h3>
-              <FaCalendarCheck className="text-2xl text-purple-300 group-hover:text-purple-500 transition" />
-            </div>
-            <p className="text-4xl font-black text-purple-600">
-              {tours.filter((t) => t.status === "pending").length}
-            </p>
-            <p className="text-xs text-purple-400 mt-2 font-medium">
-              Tour requests &rarr;
-            </p>
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <StatCard onClick={() => setActiveView("drafts")} title="My Drafts" count={drafts.length} sub="Finish listing →" icon={FaPen} colors="bg-slate-500/10 dark:bg-slate-500/20 text-slate-700 dark:text-slate-300 hover:border-slate-400/50" />
+          <StatCard onClick={() => setActiveView("pending")} title="Pending" count={pending.length} sub="Awaiting review →" icon={FaClock} colors="bg-amber-500/10 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 hover:border-amber-400/50" />
+          <StatCard onClick={() => setActiveView("posted")} title="Posted" count={published.length} sub="Live listings →" icon={FaBuilding} colors="bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 hover:border-emerald-400/50" />
+          <StatCard onClick={() => setActiveView("archived")} title="Archived" count={archived.length} sub="Archived listings →" icon={FaArchive} colors="bg-blue-500/10 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 hover:border-blue-400/50" />
+          <StatCard onClick={() => setActiveView("tours")} title="Tours" count={tours.filter((t) => t.status === "pending").length} sub="Tour requests →" icon={FaCalendarCheck} colors="bg-violet-500/10 dark:bg-violet-500/20 text-violet-700 dark:text-violet-400 hover:border-violet-400/50" />
         </div>
       )}
 
       {showCreateForm && (
-        <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 mb-8">
+        <div className="rounded-2xl border p-6 mb-8" style={{ backgroundColor: "var(--color-bg-main)", borderColor: "var(--color-border)" }}>
           <CreatePropertyForm
             key={editProperty ? editProperty._id : "create-form"}
             onSuccess={handleCreateSuccess}
-            onCancel={() => {
-              setShowCreateForm(false);
-              setEditProperty(null);
-            }}
+            onCancel={() => { setShowCreateForm(false); setEditProperty(null); }}
             initialData={editProperty}
           />
         </div>
@@ -332,20 +242,14 @@ const OwnerDashboard = () => {
 
       {activeView === "drafts" && (
         <div>
-          <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
+          <h3 className="text-xl font-bold mb-4 flex items-center gap-2 flex-wrap" style={{ color: "var(--color-text-main)" }}>
             My Drafts
-            <span className="text-sm font-normal text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
-              {drafts.length}
-            </span>
+            <span className="text-sm font-normal px-3 py-1 rounded-full" style={{ backgroundColor: "var(--color-bg-main)", color: "var(--color-text-muted)" }}>{drafts.length}</span>
           </h3>
           <div className="space-y-4">
-            {drafts.map((p) => (
-              <PropertyCard key={p._id} property={p} />
-            ))}
+            {drafts.map((p) => <PropertyCard key={p._id} property={p} />)}
             {drafts.length === 0 && (
-              <p className="text-gray-400 bg-gray-50 p-8 rounded-xl border border-dashed text-center">
-                No drafts found.
-              </p>
+              <p className="rounded-xl border border-dashed p-8 text-center" style={{ borderColor: "var(--color-border)", color: "var(--color-text-muted)" }}>No drafts found.</p>
             )}
           </div>
         </div>
@@ -353,20 +257,14 @@ const OwnerDashboard = () => {
 
       {activeView === "pending" && (
         <div>
-          <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
+          <h3 className="text-xl font-bold mb-4 flex items-center gap-2 flex-wrap" style={{ color: "var(--color-text-main)" }}>
             Pending Approval
-            <span className="text-sm font-normal text-amber-400 bg-amber-50 px-3 py-1 rounded-full border border-amber-100">
-              {pending.length}
-            </span>
+            <span className="text-sm font-normal px-3 py-1 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-400">{pending.length}</span>
           </h3>
           <div className="space-y-4">
-            {pending.map((p) => (
-              <PropertyCard key={p._id} property={p} />
-            ))}
+            {pending.map((p) => <PropertyCard key={p._id} property={p} />)}
             {pending.length === 0 && (
-              <p className="text-gray-400 bg-gray-50 p-8 rounded-xl border border-dashed text-center">
-                No pending properties.
-              </p>
+              <p className="rounded-xl border border-dashed p-8 text-center" style={{ borderColor: "var(--color-border)", color: "var(--color-text-muted)" }}>No pending properties.</p>
             )}
           </div>
         </div>
@@ -374,20 +272,14 @@ const OwnerDashboard = () => {
 
       {activeView === "posted" && (
         <div>
-          <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
+          <h3 className="text-xl font-bold mb-4 flex items-center gap-2 flex-wrap" style={{ color: "var(--color-text-main)" }}>
             Posted Properties
-            <span className="text-sm font-normal text-green-400 bg-green-50 px-3 py-1 rounded-full border border-green-100">
-              {published.length}
-            </span>
+            <span className="text-sm font-normal px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-400">{published.length}</span>
           </h3>
           <div className="space-y-4">
-            {published.map((p) => (
-              <PropertyCard key={p._id} property={p} />
-            ))}
+            {published.map((p) => <PropertyCard key={p._id} property={p} />)}
             {published.length === 0 && (
-              <p className="text-gray-400 bg-gray-50 p-8 rounded-xl border border-dashed text-center">
-                No posted properties yet.
-              </p>
+              <p className="rounded-xl border border-dashed p-8 text-center" style={{ borderColor: "var(--color-border)", color: "var(--color-text-muted)" }}>No posted properties yet.</p>
             )}
           </div>
         </div>
@@ -395,20 +287,14 @@ const OwnerDashboard = () => {
 
       {activeView === "archived" && (
         <div>
-          <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
+          <h3 className="text-xl font-bold mb-4 flex items-center gap-2 flex-wrap" style={{ color: "var(--color-text-main)" }}>
             Archived Properties
-            <span className="text-sm font-normal text-blue-400 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
-              {archived.length}
-            </span>
+            <span className="text-sm font-normal px-3 py-1 rounded-full bg-blue-500/15 text-blue-700 dark:text-blue-400">{archived.length}</span>
           </h3>
           <div className="space-y-4">
-            {archived.map((p) => (
-              <PropertyCard key={p._id} property={p} />
-            ))}
+            {archived.map((p) => <PropertyCard key={p._id} property={p} />)}
             {archived.length === 0 && (
-              <p className="text-gray-400 bg-gray-50 p-8 rounded-xl border border-dashed text-center">
-                No archived properties.
-              </p>
+              <p className="rounded-xl border border-dashed p-8 text-center" style={{ borderColor: "var(--color-border)", color: "var(--color-text-muted)" }}>No archived properties.</p>
             )}
           </div>
         </div>
@@ -416,104 +302,55 @@ const OwnerDashboard = () => {
 
       {activeView === "tours" && (
         <div>
-          <h3 className="text-2xl font-bold mb-8 flex items-center gap-2">
+          <h3 className="text-xl font-bold mb-6 flex items-center gap-2 flex-wrap" style={{ color: "var(--color-text-main)" }}>
             Incoming Tour Requests
-            <span className="text-sm font-normal text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
-              {tours.length} total
-            </span>
+            <span className="text-sm font-normal px-3 py-1 rounded-full" style={{ backgroundColor: "var(--color-bg-main)", color: "var(--color-text-muted)" }}>{tours.length} total</span>
           </h3>
           {tours.length > 0 ? (
-            <div className="space-y-6">
+            <div className="space-y-4">
               {tours.map((tour) => (
                 <div
                   key={tour._id}
-                  className="bg-white border border-gray-100 rounded-2xl p-6 flex flex-col md:flex-row gap-6 hover:shadow-md transition group"
+                  className="rounded-2xl border p-4 sm:p-6 flex flex-col md:flex-row gap-4"
+                  style={{ backgroundColor: "var(--color-bg-main)", borderColor: "var(--color-border)" }}
                 >
-                  <div className="w-full md:w-32 h-24 rounded-lg overflow-hidden border border-gray-100 shrink-0">
-                    <img
-                      src={tour.property?.images?.[0] || "/placeholder.jpg"}
-                      alt={tour.property?.title}
-                      className="w-full h-full object-cover"
-                    />
+                  <div className="w-full md:w-28 h-20 rounded-lg overflow-hidden shrink-0 border" style={{ borderColor: "var(--color-border)" }}>
+                    <img src={tour.property?.images?.[0] || "/placeholder.jpg"} alt={tour.property?.title} className="w-full h-full object-cover" />
                   </div>
-                  <div className="grow">
-                    <div className="flex justify-between items-start mb-2">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap justify-between items-start gap-2 mb-2">
                       <div>
-                        <h4 className="font-bold text-gray-800">
-                          {tour.property?.title}
-                        </h4>
-                        <p className="text-xs text-gray-400 flex items-center gap-1">
-                          <FaMapMarkerAlt /> {tour.property?.location}
-                        </p>
+                        <h4 className="font-bold" style={{ color: "var(--color-text-main)" }}>{tour.property?.title}</h4>
+                        <p className="text-xs flex items-center gap-1 mt-0.5" style={{ color: "var(--color-text-muted)" }}><FaMapMarkerAlt /> {tour.property?.location}</p>
                       </div>
-                      <span
-                        className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                          tour.status === "accepted"
-                            ? "bg-green-100 text-green-700"
-                            : tour.status === "rejected"
-                              ? "bg-red-100 text-red-700"
-                              : "bg-blue-100 text-blue-700"
-                        }`}
-                      >
-                        {tour.status}
-                      </span>
+                      <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${tour.status === "accepted" ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400" : tour.status === "rejected" ? "bg-red-500/15 text-red-600 dark:text-red-400" : "bg-blue-500/15 text-blue-600 dark:text-blue-400"}`}>{tour.status}</span>
                     </div>
-                    <div className="flex gap-4 text-sm text-gray-600 mb-2">
-                      <p className="flex items-center gap-1.5 bg-gray-50 px-2 py-1 rounded text-xs font-medium">
-                        <FaCalendarCheck className="text-blue-400" />{" "}
-                        {tour.date}
-                      </p>
-                      <p className="flex items-center gap-1.5 bg-gray-50 px-2 py-1 rounded text-xs font-medium">
-                        <FaClock className="text-blue-400" /> {tour.time}
-                      </p>
+                    <div className="flex flex-wrap gap-3 text-sm mb-2" style={{ color: "var(--color-text-muted)" }}>
+                      <span className="flex items-center gap-1.5 bg-[var(--color-bg-card)] px-2 py-1 rounded text-xs font-medium"><FaCalendarCheck /> {tour.date}</span>
+                      <span className="flex items-center gap-1.5 bg-[var(--color-bg-card)] px-2 py-1 rounded text-xs font-medium"><FaClock /> {tour.time}</span>
                     </div>
-                    <div className="flex items-center gap-3 text-xs border-t border-gray-50 pt-3 mt-3">
-                      <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center font-bold text-gray-500">
-                        {tour.user?.name?.charAt(0) || "?"}
-                      </div>
-                      <p className="font-medium text-gray-700">
-                        {tour.user?.name || "Anonymous User"}
-                      </p>
-                      <a
-                        href={`mailto:${tour.user?.email}`}
-                        className="text-gray-400 hover:text-(--color-primary) transition"
-                      >
-                        <FaEnvelope />
-                      </a>
+                    <div className="flex items-center gap-3 text-xs pt-3 mt-3 border-t" style={{ borderColor: "var(--color-border)" }}>
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center font-bold text-white bg-[var(--color-secondary)]">{tour.user?.name?.charAt(0) || "?"}</div>
+                      <span className="font-medium" style={{ color: "var(--color-text-main)" }}>{tour.user?.name || "Anonymous User"}</span>
+                      <a href={`mailto:${tour.user?.email}`} className="hover:opacity-80" style={{ color: "var(--color-text-muted)" }}><FaEnvelope /></a>
                     </div>
                     {tour.message && (
-                      <p className="mt-3 text-xs text-gray-500 italic bg-gray-50 p-2 rounded">
-                        "{tour.message}"
-                      </p>
+                      <p className="mt-3 text-xs italic p-2 rounded" style={{ backgroundColor: "var(--color-bg-card)", color: "var(--color-text-muted)" }}>&quot;{tour.message}&quot;</p>
                     )}
                   </div>
                   {tour.status === "pending" && (
-                    <div className="flex md:flex-col gap-2 justify-center border-l border-gray-50 pl-6">
-                      <button
-                        onClick={() =>
-                          handleUpdateTourStatus(tour._id, "accepted")
-                        }
-                        className="flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-green-700 transition"
-                      >
-                        <FaCheck /> Accept
-                      </button>
-                      <button
-                        onClick={() =>
-                          handleUpdateTourStatus(tour._id, "rejected")
-                        }
-                        className="flex items-center justify-center gap-2 bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm font-bold hover:bg-red-200 transition"
-                      >
-                        <FaTimes /> Decline
-                      </button>
+                    <div className="flex md:flex-col gap-2 justify-center border-l pl-6" style={{ borderColor: "var(--color-border)" }}>
+                      <button onClick={() => handleUpdateTourStatus(tour._id, "accepted")} className="flex items-center justify-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-emerald-700 transition"><FaCheck /> Accept</button>
+                      <button onClick={() => handleUpdateTourStatus(tour._id, "rejected")} className="flex items-center justify-center gap-2 bg-red-500/15 text-red-600 dark:text-red-400 px-4 py-2 rounded-lg text-sm font-bold hover:bg-red-500/25 transition"><FaTimes /> Decline</button>
                     </div>
                   )}
                 </div>
               ))}
             </div>
           ) : (
-            <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-3xl p-16 text-center text-gray-400">
-              <FaCalendarCheck className="w-16 h-16 mx-auto mb-4 opacity-20" />
-              <p>No tour requests yet.</p>
+            <div className="rounded-2xl border-2 border-dashed p-12 text-center" style={{ borderColor: "var(--color-border)", backgroundColor: "var(--color-bg-main)" }}>
+              <FaCalendarCheck className="w-14 h-14 mx-auto mb-4 opacity-40" style={{ color: "var(--color-text-muted)" }} />
+              <p style={{ color: "var(--color-text-muted)" }}>No tour requests yet.</p>
             </div>
           )}
         </div>

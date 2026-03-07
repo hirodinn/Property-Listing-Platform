@@ -1,25 +1,68 @@
 @import "tailwindcss";
 
+/* Light theme (default) */
+:root,
+.light {
+  --color-primary: #0f172a;
+  --color-primary-hover: #1e293b;
+  --color-secondary: #2563eb;
+  --color-secondary-hover: #1d4ed8;
+  --color-accent: #f59e0b;
+  --color-accent-muted: #fef3c7;
+
+  --color-bg-main: #f8fafc;
+  --color-bg-card: #ffffff;
+  --color-bg-elevated: #ffffff;
+  --color-bg-input: #ffffff;
+
+  --color-border: #e2e8f0;
+  --color-border-muted: #f1f5f9;
+
+  --color-text-main: #0f172a;
+  --color-text-muted: #64748b;
+  --color-text-light: #ffffff;
+  --color-inverse-bg: #0f172a;
+  --color-inverse-text: #ffffff;
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.06);
+}
+
+/* Dark theme */
+.dark {
+  --color-primary: #f1f5f9;
+  --color-primary-hover: #e2e8f0;
+  --color-secondary: #3b82f6;
+  --color-secondary-hover: #60a5fa;
+  --color-accent: #fbbf24;
+  --color-accent-muted: #422006;
+
+  --color-bg-main: #0f172a;
+  --color-bg-card: #1e293b;
+  --color-bg-elevated: #334155;
+  --color-bg-input: #1e293b;
+
+  --color-border: #334155;
+  --color-border-muted: #1e293b;
+
+  --color-text-main: #f1f5f9;
+  --color-text-muted: #94a3b8;
+  --color-text-light: #0f172a;
+  --color-inverse-bg: #0f172a;
+  --color-inverse-text: #ffffff;
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.2);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.2);
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.4);
+}
+
 :root {
-  /* Brand Colors */
-  --color-primary: #1e293b; /* Dark Navy Blue (Header) */
-  --color-secondary: #3b82f6; /* Blue (Buttons/Links) */
-  --color-accent: #f59e0b; /* Orange/Yellow (Badges/Price) */
-
-  /* Backgrounds */
-  --color-bg-main: #f3f4f6; /* Light Gray Main BG */
-  --color-bg-card: #ffffff; /* White Card BG */
-
-  /* Text */
-  --color-text-main: #111827; /* Dark Gray/Black */
-  --color-text-muted: #6b7280; /* Muted Gray */
-  --color-text-light: #ffffff; /* White text */
-
-  /* Font Settings */
-  font-family: "Inter", system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
   color-scheme: light dark;
   color: var(--color-text-main);
   background-color: var(--color-bg-main);
@@ -31,4 +74,20 @@ body {
   min-height: 100vh;
   background-color: var(--color-bg-main);
   color: var(--color-text-main);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Toast dark mode override */
+.dark .Toastify__toast {
+  background: var(--color-bg-elevated) !important;
+  color: var(--color-text-main) !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+.dark .Toastify__toast-body {
+  color: var(--color-text-main) !important;
+}
+
+.dark .Toastify__close-button {
+  color: var(--color-text-muted) !important;
 }

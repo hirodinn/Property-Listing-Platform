@@ -107,102 +107,68 @@ const CreatePropertyForm = ({ onSuccess, onCancel, initialData }) => {
 
   if (isLoading) return <Spinner />;
 
+  const inputClass = "w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-offset-2 transition text-base";
+  const inputStyle = {
+    backgroundColor: "var(--color-bg-input)",
+    borderColor: "var(--color-border)",
+    color: "var(--color-text-main)",
+  };
+
   return (
-    <div className="bg-white border rounded-xl shadow-sm p-6 mb-6 relative">
+    <div
+      className="rounded-xl border p-6 relative"
+      style={{
+        backgroundColor: "var(--color-bg-card)",
+        borderColor: "var(--color-border)",
+        boxShadow: "var(--shadow-card)",
+      }}
+    >
       <button
         onClick={onCancel}
-        className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+        className="absolute top-4 right-4 p-2 rounded-lg hover:opacity-80 transition"
+        style={{ color: "var(--color-text-muted)" }}
+        aria-label="Close"
       >
         <FaTimes size={20} />
       </button>
 
-      <h3 className="text-xl font-bold mb-4 text-(--color-primary)">
+      <h3 className="text-xl font-bold mb-6" style={{ color: "var(--color-primary)" }}>
         {initialData ? "Edit Draft" : "Start a New Draft"}
       </h3>
 
       <form onSubmit={onSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
-            <label className="block text-sm font-semibold mb-1" htmlFor="title">
-              Title *
-            </label>
-            <input
-              type="text"
-              id="title"
-              className="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-(--color-primary) outline-none"
-              value={title}
-              onChange={onMutate}
-              required
-            />
+            <label className="block text-sm font-semibold mb-1.5" htmlFor="title" style={{ color: "var(--color-text-main)" }}>Title *</label>
+            <input type="text" id="title" className={inputClass} style={inputStyle} value={title} onChange={onMutate} required />
           </div>
           <div>
-            <label className="block text-sm font-semibold mb-1" htmlFor="price">
-              Price (Monthly) *
-            </label>
-            <input
-              type="number"
-              id="price"
-              className="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-(--color-primary) outline-none"
-              value={price}
-              onChange={onMutate}
-              required
-            />
+            <label className="block text-sm font-semibold mb-1.5" htmlFor="price" style={{ color: "var(--color-text-main)" }}>Price (Monthly) *</label>
+            <input type="number" id="price" className={inputClass} style={inputStyle} value={price} onChange={onMutate} required />
           </div>
         </div>
 
         <div className="mb-4">
-          <label
-            className="block text-sm font-semibold mb-1"
-            htmlFor="location"
-          >
-            Location *
-          </label>
-          <input
-            type="text"
-            id="location"
-            className="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-(--color-primary) outline-none"
-            value={location}
-            onChange={onMutate}
-            required
-          />
+          <label className="block text-sm font-semibold mb-1.5" htmlFor="location" style={{ color: "var(--color-text-main)" }}>Location *</label>
+          <input type="text" id="location" className={inputClass} style={inputStyle} value={location} onChange={onMutate} required />
         </div>
 
         <div className="mb-4">
-          <label
-            className="block text-sm font-semibold mb-1"
-            htmlFor="description"
-          >
-            Description *
-          </label>
-          <textarea
-            id="description"
-            className="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-(--color-primary) outline-none h-24"
-            value={description}
-            onChange={onMutate}
-            required
-          ></textarea>
+          <label className="block text-sm font-semibold mb-1.5" htmlFor="description" style={{ color: "var(--color-text-main)" }}>Description *</label>
+          <textarea id="description" className={`${inputClass} h-28 resize-none`} style={inputStyle} value={description} onChange={onMutate} required />
         </div>
 
-        {/* Existing Images */}
         {existingImages.length > 0 && (
           <div className="mb-4">
-            <h4 className="text-sm font-semibold mb-2">Existing Images</h4>
+            <h4 className="text-sm font-semibold mb-2" style={{ color: "var(--color-text-main)" }}>Existing Images</h4>
             <div className="flex flex-wrap gap-2">
               {existingImages.map((img, index) => (
                 <div key={index} className="relative w-24 h-24">
-                  <img
-                    src={img}
-                    alt={`Existing ${index}`}
-                    className="w-full h-full object-cover rounded-lg"
-                  />
+                  <img src={img} alt={`Existing ${index}`} className="w-full h-full object-cover rounded-lg border" style={{ borderColor: "var(--color-border)" }} />
                   <button
                     type="button"
-                    onClick={() =>
-                      setExistingImages(
-                        existingImages.filter((_, i) => i !== index),
-                      )
-                    }
-                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 text-xs hover:bg-red-600"
+                    onClick={() => setExistingImages(existingImages.filter((_, i) => i !== index))}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 text-xs hover:bg-red-600 transition"
                   >
                     <FaTimes />
                   </button>
@@ -213,17 +179,15 @@ const CreatePropertyForm = ({ onSuccess, onCancel, initialData }) => {
         )}
 
         <div className="mb-6">
-          <label className="block text-sm font-semibold mb-1" htmlFor="images">
-            {initialData
-              ? `Add More Images (Max ${6 - existingImages.length} more)`
-              : "Images * (Max 6)"}
+          <label className="block text-sm font-semibold mb-1.5" htmlFor="images" style={{ color: "var(--color-text-main)" }}>
+            {initialData ? `Add More Images (Max ${6 - existingImages.length} more)` : "Images * (Max 6)"}
           </label>
           <input
             type="file"
             id="images"
-            className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-(--color-secondary) file:text-white hover:file:bg-opacity-90"
+            className="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:text-white file:cursor-pointer hover:file:opacity-90 transition file:bg-[var(--color-secondary)]"
+            style={{ color: "var(--color-text-muted)" }}
             onChange={onFileChange}
-            max="6"
             accept=".jpg,.png,.jpeg"
             multiple
             required={existingImages.length === 0}
@@ -232,16 +196,13 @@ const CreatePropertyForm = ({ onSuccess, onCancel, initialData }) => {
         </div>
 
         <div className="flex justify-end gap-3">
-          <button
-            type="button"
-            onClick={onCancel}
-            className="px-4 py-2 text-gray-600 font-semibold hover:text-gray-800"
-          >
+          <button type="button" onClick={onCancel} className="px-4 py-2.5 rounded-xl font-semibold hover:opacity-80 transition" style={{ color: "var(--color-text-muted)" }}>
             Cancel
           </button>
           <button
             type="submit"
-            className="bg-(--color-primary) text-white px-6 py-2 rounded-lg font-bold hover:bg-opacity-90 transition"
+            className="px-6 py-2.5 rounded-xl font-bold text-white transition hover:opacity-95 active:scale-[0.98]"
+            style={{ backgroundColor: "var(--color-primary)" }}
           >
             {initialData ? "Update Draft" : "Create Draft"}
           </button>

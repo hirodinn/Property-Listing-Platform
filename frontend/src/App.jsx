@@ -25,7 +25,7 @@ function App() {
     <>
       <Router>
         <Header />
-        <div className="container mx-auto px-4 py-8">
+        <main className="min-h-[calc(100vh-4rem)] container mx-auto px-4 sm:px-6 py-8 max-w-7xl">
           <Routes>
             <Route path="/" element={<Properties />} />
             <Route path="/login" element={<Login />} />
@@ -37,7 +37,7 @@ function App() {
               <Route path="/dashboard" element={<Dashboard />} />
             </Route>
           </Routes>
-        </div>
+        </main>
       </Router>
       <ToastContainer />
     </>

@@ -50,48 +50,87 @@ function Login() {
   }
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center">
-      <div className="bg-[var(--color-bg-card)] p-8 rounded-lg shadow-md w-96">
-        <h1 className="text-2xl font-bold mb-6 text-center text-[var(--color-primary)]">
-          Login
+    <div className="min-h-[70vh] flex items-center justify-center py-12">
+      <div
+        className="w-full max-w-md p-8 sm:p-10 rounded-2xl border shadow-lg"
+        style={{
+          backgroundColor: "var(--color-bg-card)",
+          borderColor: "var(--color-border)",
+        }}
+      >
+        <h1 className="text-2xl font-bold text-center mb-2" style={{ color: "var(--color-primary)" }}>
+          Welcome back
         </h1>
-        <form onSubmit={onSubmit}>
-          <div className="mb-4">
+        <p className="text-center text-sm mb-8" style={{ color: "var(--color-text-muted)" }}>
+          Sign in to your account
+        </p>
+
+        <form onSubmit={onSubmit} className="space-y-5">
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-sm font-semibold mb-1.5"
+              style={{ color: "var(--color-text-main)" }}
+            >
+              Email
+            </label>
             <input
               type="email"
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-secondary)] bg-white text-[var(--color-text-main)]"
               id="email"
               name="email"
               value={email}
-              placeholder="Enter your email"
+              placeholder="you@example.com"
               onChange={onChange}
               required
+              className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-offset-2 transition text-base"
+              style={{
+                backgroundColor: "var(--color-bg-input)",
+                borderColor: "var(--color-border)",
+                color: "var(--color-text-main)",
+              }}
             />
           </div>
-          <div className="mb-6">
+
+          <div>
+            <label
+              htmlFor="password"
+              className="block text-sm font-semibold mb-1.5"
+              style={{ color: "var(--color-text-main)" }}
+            >
+              Password
+            </label>
             <input
               type="password"
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-secondary)] bg-white text-[var(--color-text-main)]"
               id="password"
               name="password"
               value={password}
-              placeholder="Enter password"
+              placeholder="••••••••"
               onChange={onChange}
               required
+              className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-offset-2 transition text-base"
+              style={{
+                backgroundColor: "var(--color-bg-input)",
+                borderColor: "var(--color-border)",
+                color: "var(--color-text-main)",
+              }}
             />
           </div>
+
           <button
             type="submit"
-            className="w-full bg-[var(--color-secondary)] text-white py-2 rounded-lg hover:bg-opacity-90 transition duration-300 font-semibold"
+            className="w-full py-3.5 rounded-xl font-semibold text-white transition-all hover:opacity-95 active:scale-[0.99]"
+            style={{ backgroundColor: "var(--color-secondary)" }}
           >
             Sign In
           </button>
         </form>
-        <p className="mt-4 text-center text-[var(--color-text-muted)] text-sm">
-          Don't have an account?{" "}
+
+        <p className="mt-6 text-center text-sm" style={{ color: "var(--color-text-muted)" }}>
+          Don&apos;t have an account?{" "}
           <Link
             to="/register"
-            className="text-[var(--color-secondary)] hover:underline"
+            className="font-semibold hover:underline"
+            style={{ color: "var(--color-secondary)" }}
           >
             Register
           </Link>

@@ -5,7 +5,6 @@ import { getProperty } from "../features/properties/propertySlice";
 import Spinner from "../components/Spinner";
 import {
   FaMapMarkerAlt,
-  FaCalendarAlt,
   FaCheck,
   FaTimes,
   FaBookmark,
@@ -20,7 +19,7 @@ import {
   deleteProperty,
   archiveProperty,
 } from "../features/properties/propertySlice";
-import { disableProperty } from "../features/admin/adminSlice"; // Assuming disableProperty is exported from adminSlice
+import { disableProperty } from "../features/admin/adminSlice";
 import { toggleFavorite } from "../features/auth/authSlice";
 import { requestTour } from "../features/tours/tourSlice";
 import TourRequestModal from "../components/TourRequestModal";
@@ -41,12 +40,7 @@ function PropertyDetails() {
     if (isError) {
       console.error(message);
     }
-
     dispatch(getProperty(id));
-
-    // Cleanup on unmount (optional, but good practice to clear single property state)
-    // Actually reset() clears everything including list. We might want a clearCurrentProperty action
-    // But for now, let's keep it simple.
   }, [dispatch, id, isError, message]);
 
   const handleApprove = async () => {
@@ -94,11 +88,10 @@ function PropertyDetails() {
           await dispatch(disableProperty(id)).unwrap();
           toast.success("Property disabled successfully");
         } else {
-          // For owners, use archiveProperty from propertySlice
           await dispatch(archiveProperty(id)).unwrap();
           toast.success("Property archived successfully");
         }
-        dispatch(getProperty(id)); // Refresh details
+        dispatch(getProperty(id));
       } catch (err) {
         toast.error(err || "Failed to update property status");
       }
@@ -135,52 +128,56 @@ function PropertyDetails() {
     return <Spinner />;
   }
 
+  const statusStyles = {
+    published: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
+    pending: "bg-amber-500/15 text-amber-600 dark:text-amber-400",
+    draft: "bg-slate-500/15 text-slate-600 dark:text-slate-400",
+    archived: "bg-slate-500/15 text-slate-600 dark:text-slate-400",
+  };
+  const statusClass = statusStyles[property.status] || statusStyles.draft;
+
   return (
-    <div className="max-w-6xl mx-auto px-4">
+    <div className="max-w-5xl mx-auto">
       <button
         onClick={() => navigate(-1)}
-        className="mb-6 text-(--color-primary) hover:underline flex items-center gap-1 font-medium"
+        className="mb-6 flex items-center gap-2 text-sm font-semibold hover:opacity-80 transition"
+        style={{ color: "var(--color-secondary)" }}
       >
-        &larr; Back to Properties
+        ← Back to Properties
       </button>
 
-      <div className="bg-(--color-bg-card) rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        {/* New Header Section */}
-        <div className="p-8 border-b border-gray-100 bg-white">
+      <div
+        className="rounded-2xl border overflow-hidden"
+        style={{
+          backgroundColor: "var(--color-bg-card)",
+          borderColor: "var(--color-border)",
+          boxShadow: "var(--shadow-lg)",
+        }}
+      >
+        <div className="p-6 sm:p-8 border-b" style={{ borderColor: "var(--color-border)" }}>
           <div className="flex flex-col md:flex-row justify-between items-start gap-4">
             <div>
-              <h1 className="text-4xl font-extrabold text-(--color-primary) mb-3 leading-tight">
+              <h1 className="text-3xl sm:text-4xl font-extrabold mb-2 leading-tight" style={{ color: "var(--color-primary)" }}>
                 {property.title}
               </h1>
-              <p className="flex items-center gap-2 text-(--color-text-muted) text-xl">
-                <FaMapMarkerAlt className="text-(--color-secondary)" />{" "}
+              <p className="flex items-center gap-2 text-lg" style={{ color: "var(--color-text-muted)" }}>
+                <FaMapMarkerAlt style={{ color: "var(--color-secondary)" }} />
                 {property.location}
               </p>
             </div>
             <div className="flex flex-col items-start md:items-end gap-3">
-              <div className="text-4xl font-bold text-(--color-secondary)">
+              <div className="text-3xl font-bold" style={{ color: "var(--color-secondary)" }}>
                 ${property.price.toLocaleString()}
-                <span className="text-lg text-(--color-text-muted) font-normal ml-1">
-                  /mo
-                </span>
+                <span className="text-base font-normal ml-1" style={{ color: "var(--color-text-muted)" }}>/mo</span>
               </div>
-              <div
-                className={`px-4 py-1.5 rounded-full text-sm font-bold capitalize shadow-sm ${
-                  property.status === "published"
-                    ? "bg-green-100 text-green-700"
-                    : property.status === "pending"
-                      ? "bg-yellow-100 text-yellow-700"
-                      : "bg-gray-100 text-gray-700"
-                }`}
-              >
+              <span className={`px-4 py-1.5 rounded-full text-sm font-bold capitalize ${statusClass}`}>
                 {property.status}
-              </div>
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Images Section - Dynamic Grid based on image count */}
-        <div className="p-8 border-b border-gray-100 bg-gray-50">
+        <div className="p-6 sm:p-8" style={{ backgroundColor: "var(--color-bg-main)" }}>
           {property.images && property.images.length > 0 ? (
             <div
               className={`grid gap-4 ${
@@ -194,112 +191,118 @@ function PropertyDetails() {
               {property.images.map((img, index) => (
                 <div
                   key={index}
-                  className={`relative group overflow-hidden rounded-xl shadow-sm border border-gray-200 transition-all duration-300 hover:shadow-md ${
+                  className={`relative group overflow-hidden rounded-xl border transition-all duration-300 hover:shadow-lg ${
                     property.images.length === 1
-                      ? "h-[600px]"
+                      ? "h-[400px] sm:h-[500px]"
                       : index === 0 && property.images.length > 2
-                        ? "md:col-span-2 md:row-span-2 h-[500px]"
+                        ? "md:col-span-2 md:row-span-2 h-[300px] md:h-[400px]"
                         : property.images.length === 2
-                          ? "h-[400px]"
-                          : "h-[242px]"
+                          ? "h-[300px]"
+                          : "h-[220px]"
                   }`}
+                  style={{ borderColor: "var(--color-border)" }}
                 >
                   <img
                     src={img}
                     alt={`${property.title} - ${index + 1}`}
-                    className="w-full h-full object-cover transition duration-500 group-hover:scale-110"
+                    className="w-full h-full object-cover transition duration-500 group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none" />
                 </div>
               ))}
             </div>
           ) : (
-            <div className="bg-gray-200 h-[300px] flex items-center justify-center text-(--color-text-muted) rounded-xl">
+            <div
+              className="h-64 flex items-center justify-center rounded-xl text-lg font-medium"
+              style={{ backgroundColor: "var(--color-bg-elevated)", color: "var(--color-text-muted)" }}
+            >
               No Images Available
             </div>
           )}
         </div>
 
-        <div className="p-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+        <div className="p-6 sm:p-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             <div className="md:col-span-2">
-              <h3 className="text-xl font-bold text-(--color-primary) mb-4">
+              <h3 className="text-xl font-bold mb-4" style={{ color: "var(--color-primary)" }}>
                 Description
               </h3>
-              <p className="text-(--color-text-main) leading-relaxed whitespace-pre-wrap">
+              <p className="leading-relaxed whitespace-pre-wrap" style={{ color: "var(--color-text-main)" }}>
                 {property.description}
               </p>
             </div>
 
-            {/* Sidebar / Owner Info or Contact */}
-            <div className="bg-(--color-bg-main) p-6 rounded-lg h-fit">
-              <h3 className="text-lg font-bold text-(--color-primary) mb-4">
+            <div
+              className="p-6 rounded-2xl border h-fit"
+              style={{
+                backgroundColor: "var(--color-bg-main)",
+                borderColor: "var(--color-border)",
+              }}
+            >
+              <h3 className="text-lg font-bold mb-4" style={{ color: "var(--color-primary)" }}>
                 Contact Agent
               </h3>
               {property.owner ? (
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-xl font-bold text-white">
+                  <div
+                    className="w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold text-white shrink-0"
+                    style={{ backgroundColor: "var(--color-secondary)" }}
+                  >
                     {property.owner.name.charAt(0)}
                   </div>
-                  <div>
-                    <p className="font-bold text-(--color-text-main)">
+                  <div className="min-w-0">
+                    <p className="font-bold truncate" style={{ color: "var(--color-text-main)" }}>
                       {property.owner.name}
                     </p>
-                    <p className="text-sm text-(--color-text-muted)">
+                    <p className="text-sm truncate" style={{ color: "var(--color-text-muted)" }}>
                       {property.owner.email}
                     </p>
                   </div>
                 </div>
               ) : (
-                <p className="text-(--color-text-muted) mb-4">
+                <p className="mb-4 text-sm" style={{ color: "var(--color-text-muted)" }}>
                   Owner information not available.
                 </p>
               )}
 
-              {/* Actions Section */}
               {user && (user.role === "admin" || user.role === "owner") ? (
                 <div className="space-y-3">
                   {user.role === "admin" && property.status === "pending" && (
                     <div className="flex gap-2">
                       <button
                         onClick={handleApprove}
-                        className="flex-1 bg-green-600 text-white py-3 rounded-lg font-bold hover:bg-green-700 transition flex items-center justify-center gap-2"
+                        className="flex-1 py-3 rounded-xl font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition flex items-center justify-center gap-2"
                       >
                         <FaCheck /> Approve
                       </button>
                       <button
                         onClick={handleReject}
-                        className="flex-1 bg-red-600 text-white py-3 rounded-lg font-bold hover:bg-red-700 transition flex items-center justify-center gap-2"
+                        className="flex-1 py-3 rounded-xl font-bold text-white bg-red-600 hover:bg-red-700 transition flex items-center justify-center gap-2"
                       >
                         <FaTimes /> Reject
                       </button>
                     </div>
                   )}
 
-                  {/* Disable (Archive) for Published Properties - Admin & Owner */}
                   {property.status === "published" && (
                     <button
                       onClick={handleDisable}
-                      className="w-full bg-blue-100 text-blue-700 py-3 rounded-lg font-bold hover:bg-blue-200 transition flex items-center justify-center gap-2"
+                      className="w-full py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 bg-blue-500/15 text-blue-600 dark:text-blue-400 hover:bg-blue-500/25"
                     >
                       <FaArchive />{" "}
-                      {user.role === "admin"
-                        ? "Disable Property"
-                        : "Archive Property"}
+                      {user.role === "admin" ? "Disable Property" : "Archive Property"}
                     </button>
                   )}
 
-                  {/* Delete for Drafts - Admin & Owner */}
                   {property.status === "draft" && (
                     <button
                       onClick={handleDelete}
-                      className="w-full bg-red-100 text-red-700 py-3 rounded-lg font-bold hover:bg-red-200 transition flex items-center justify-center gap-2"
+                      className="w-full py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 bg-red-500/15 text-red-600 dark:text-red-400 hover:bg-red-500/25"
                     >
                       <FaTrash /> Delete Property
                     </button>
                   )}
 
-                  <p className="text-center text-xs text-(--color-text-muted) italic">
+                  <p className="text-center text-xs italic" style={{ color: "var(--color-text-muted)" }}>
                     Managing as {user.role}
                   </p>
                 </div>
@@ -307,22 +310,29 @@ function PropertyDetails() {
                 user?.role === "user" && (
                   <button
                     onClick={() => setIsTourModalOpen(true)}
-                    className="w-full bg-(--color-primary) text-white py-3 rounded-lg font-bold hover:bg-opacity-90 transition"
+                    className="w-full py-3 rounded-xl font-bold transition hover:opacity-95 active:scale-[0.99]"
+                    style={{
+                      backgroundColor: "var(--color-primary)",
+                      color: "var(--color-text-light)",
+                    }}
                   >
                     Request a Tour
                   </button>
                 )
               )}
 
-              {/* Favorites Action - Restricted to normal users */}
               {user?.role === "user" && (
                 <button
                   onClick={handleToggleFavorite}
-                  className={`w-full mt-3 py-3 rounded-lg font-bold border-2 transition flex items-center justify-center gap-2 ${
+                  className={`w-full mt-3 py-3 rounded-xl font-bold border-2 transition flex items-center justify-center gap-2 ${
                     isFavorited
-                      ? "border-amber-500 text-amber-500 hover:bg-amber-50"
-                      : "border-gray-200 text-(--color-text-main) hover:bg-gray-50"
+                      ? "border-amber-500 text-amber-500 dark:text-amber-400 bg-amber-500/10"
+                      : "hover:opacity-90"
                   }`}
+                  style={{
+                    borderColor: isFavorited ? undefined : "var(--color-border)",
+                    color: isFavorited ? undefined : "var(--color-text-main)",
+                  }}
                 >
                   {isFavorited ? (
                     <>
@@ -336,7 +346,7 @@ function PropertyDetails() {
                 </button>
               )}
 
-              <p className="text-center text-xs text-(--color-text-muted) mt-2">
+              <p className="text-center text-xs mt-3" style={{ color: "var(--color-text-muted)" }}>
                 Posted on {new Date(property.createdAt).toLocaleDateString()}
               </p>
             </div>

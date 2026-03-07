@@ -14,34 +14,54 @@ const TourRequestModal = ({ isOpen, onClose, onSubmit, propertyTitle }) => {
     onClose();
   };
 
+  const inputStyle = {
+    backgroundColor: "var(--color-bg-input)",
+    borderColor: "var(--color-border)",
+    color: "var(--color-text-main)",
+  };
+
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
-        <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-(--color-primary) text-white">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div
+        className="w-full max-w-md rounded-2xl overflow-hidden border shadow-2xl"
+        style={{
+          backgroundColor: "var(--color-bg-card)",
+          borderColor: "var(--color-border)",
+        }}
+      >
+        {/* Header: always dark bar in both themes */}
+        <div
+          className="p-6 flex justify-between items-center"
+          style={{
+            backgroundColor: "var(--color-inverse-bg)",
+            color: "var(--color-inverse-text)",
+          }}
+        >
           <h2 className="text-xl font-bold">Request a Tour</h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-white/20 rounded-full transition"
+            className="p-2 rounded-xl hover:opacity-80 transition text-inherit"
+            aria-label="Close"
           >
-            <FaTimes />
+            <FaTimes size={20} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>
             Scheduling a tour for:{" "}
-            <span className="font-bold text-gray-700">{propertyTitle}</span>
+            <span className="font-semibold" style={{ color: "var(--color-text-main)" }}>{propertyTitle}</span>
           </p>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
-              <FaCalendarAlt className="text-(--color-secondary)" /> Preferred
-              Date
+            <label className="block text-sm font-semibold flex items-center gap-2" style={{ color: "var(--color-text-main)" }}>
+              <FaCalendarAlt style={{ color: "var(--color-secondary)" }} /> Preferred Date
             </label>
             <input
               type="date"
               required
-              className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent outline-none transition"
+              className="w-full p-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-secondary)] transition"
+              style={inputStyle}
               value={date}
               onChange={(e) => setDate(e.target.value)}
               min={new Date().toISOString().split("T")[0]}
@@ -49,33 +69,40 @@ const TourRequestModal = ({ isOpen, onClose, onSubmit, propertyTitle }) => {
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
-              <FaClock className="text-(--color-secondary)" /> Preferred Time
+            <label className="block text-sm font-semibold flex items-center gap-2" style={{ color: "var(--color-text-main)" }}>
+              <FaClock style={{ color: "var(--color-secondary)" }} /> Preferred Time
             </label>
             <input
               type="time"
               required
-              className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent outline-none transition"
+              className="w-full p-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-secondary)] transition"
+              style={inputStyle}
               value={time}
               onChange={(e) => setTime(e.target.value)}
             />
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Message (Optional)
+            <label className="block text-sm font-semibold" style={{ color: "var(--color-text-main)" }}>
+              Message (optional)
             </label>
             <textarea
-              className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-(--color-primary) focus:border-transparent outline-none transition h-24 resize-none"
-              placeholder="Tell the owner when you're available or ask a question..."
+              className="w-full p-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-secondary)] transition h-24 resize-none placeholder:opacity-70"
+              style={inputStyle}
+              placeholder="When you're available or any questions..."
               value={message}
               onChange={(e) => setMessage(e.target.value)}
             />
           </div>
 
+          {/* Button: same dark bar style as header for consistency */}
           <button
             type="submit"
-            className="w-full bg-(--color-primary) text-white py-4 rounded-xl font-bold hover:shadow-lg hover:shadow-(--color-primary)/30 active:scale-95 transition-all duration-200"
+            className="w-full py-3.5 rounded-xl font-bold transition-all hover:opacity-95 active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-secondary)]"
+            style={{
+              backgroundColor: "var(--color-inverse-bg)",
+              color: "var(--color-inverse-text)",
+            }}
           >
             Confirm Request
           </button>

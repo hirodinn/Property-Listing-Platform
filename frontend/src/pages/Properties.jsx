@@ -3,11 +3,11 @@ import { useSelector, useDispatch } from "react-redux";
 import { getProperties, reset } from "../features/properties/propertySlice";
 import PropertyItem from "../components/PropertyItem";
 import Spinner from "../components/Spinner";
+import { HiOutlineSearch } from "react-icons/hi";
 
 function Properties() {
   const dispatch = useDispatch();
 
-  // Local state for filters (simplified for now)
   const [filters, setFilters] = useState({
     location: "",
   });
@@ -23,7 +23,7 @@ function Properties() {
       dispatch(reset());
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch]); // Run once on mount. Search handles updates.
+  }, [dispatch]);
 
   useEffect(() => {
     if (isError) {
@@ -41,38 +41,65 @@ function Properties() {
   }
 
   return (
-    <div>
-      {/* Search / Filter Section */}
-      <div className="mb-8">
-        <form onSubmit={handleSearch} className="flex gap-4">
+    <div className="space-y-10">
+      <div className="text-center max-w-2xl mx-auto">
+        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-2" style={{ color: "var(--color-text-main)" }}>
+          Find your next place
+        </h1>
+        <p className="text-lg" style={{ color: "var(--color-text-muted)" }}>
+          Browse listings and schedule tours in one place.
+        </p>
+      </div>
+
+      <form
+        onSubmit={handleSearch}
+        className="flex flex-col sm:flex-row gap-3 max-w-2xl mx-auto"
+      >
+        <div className="relative flex-1">
+          <HiOutlineSearch
+            className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none opacity-50"
+            style={{ color: "var(--color-text-muted)" }}
+          />
           <input
             type="text"
             placeholder="Search by location..."
-            className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[var(--color-secondary)] shadow-sm text-[var(--color-text-main)] bg-[var(--color-bg-card)]"
+            className="w-full pl-12 pr-4 py-3.5 rounded-xl border text-base focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all"
+            style={{
+              backgroundColor: "var(--color-bg-card)",
+              borderColor: "var(--color-border)",
+              color: "var(--color-text-main)",
+              ["--tw-ring-color"]: "var(--color-secondary)",
+            }}
             value={filters.location}
             onChange={(e) =>
               setFilters({ ...filters, location: e.target.value })
             }
           />
-          <button
-            type="submit"
-            className="bg-[var(--color-primary)] text-white px-8 py-3 rounded-xl font-semibold hover:bg-opacity-90 transition"
-          >
-            Search
-          </button>
-        </form>
-      </div>
+        </div>
+        <button
+          type="submit"
+          className="px-6 py-3.5 rounded-xl font-semibold text-white transition-all hover:opacity-95 active:scale-[0.98] shrink-0"
+          style={{ backgroundColor: "var(--color-primary)" }}
+        >
+          Search
+        </button>
+      </form>
 
       {properties && properties.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {properties.map((property) => (
             <PropertyItem key={property._id} property={property} />
           ))}
         </div>
       ) : (
-        <h3 className="text-center text-[var(--color-text-muted)] mt-10">
-          No properties found
-        </h3>
+        <div className="text-center py-16 rounded-2xl border-2 border-dashed" style={{ borderColor: "var(--color-border)", backgroundColor: "var(--color-bg-card)" }}>
+          <p className="text-lg font-medium" style={{ color: "var(--color-text-muted)" }}>
+            No properties found
+          </p>
+          <p className="text-sm mt-1" style={{ color: "var(--color-text-muted)" }}>
+            Try a different search or check back later.
+          </p>
+        </div>
       )}
     </div>
   );

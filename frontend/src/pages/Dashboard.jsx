@@ -20,11 +20,11 @@ const Dashboard = () => {
     return <Spinner />;
   }
 
-  if (!user) return null; // Prevent flicker before redirect
+  if (!user) return null;
 
   return (
-    <div className="max-w-6xl mx-auto px-4">
-      <h1 className="text-3xl font-bold mb-8 text-[var(--color-text-main)]">
+    <div className="max-w-6xl mx-auto">
+      <h1 className="text-3xl font-bold mb-8" style={{ color: "var(--color-text-main)" }}>
         Dashboard
       </h1>
 

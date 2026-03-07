@@ -11,9 +11,9 @@ import {
   FaBookmark,
   FaCalendarCheck,
   FaArrowLeft,
-  FaClock,
   FaMapMarkerAlt,
   FaCalendarAlt,
+  FaClock,
 } from "react-icons/fa";
 
 const UserDashboard = () => {
@@ -26,16 +26,12 @@ const UserDashboard = () => {
   );
 
   const tours = Array.isArray(tourRequests) ? tourRequests : [];
-
-  const [activeView, setActiveView] = useState("overview"); // overview, favorites, tours
+  const [activeView, setActiveView] = useState("overview");
 
   useEffect(() => {
     dispatch(getFavorites());
     dispatch(getUserTours());
-
-    return () => {
-      dispatch(resetTours());
-    };
+    return () => dispatch(resetTours());
   }, [dispatch]);
 
   if (favoritesLoading || toursLoading) {
@@ -43,20 +39,28 @@ const UserDashboard = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 bg-white rounded-2xl shadow-sm border border-gray-100 min-h-[600px]">
-      <div className="flex justify-between items-center mb-8">
+    <div
+      className="max-w-6xl mx-auto rounded-2xl border min-h-[600px] p-6 sm:p-8"
+      style={{
+        backgroundColor: "var(--color-bg-card)",
+        borderColor: "var(--color-border)",
+        boxShadow: "var(--shadow-card)",
+      }}
+    >
+      <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
         <div>
-          <h2 className="text-3xl font-extrabold text-(--color-primary)">
+          <h2 className="text-2xl sm:text-3xl font-extrabold" style={{ color: "var(--color-primary)" }}>
             User Dashboard
           </h2>
-          <p className="text-(--color-text-muted)">
-            Welcome back, {user && user.name.split(" ")[0]}!
+          <p className="mt-1" style={{ color: "var(--color-text-muted)" }}>
+            Welcome back, {user?.name?.split(" ")[0]}!
           </p>
         </div>
         {activeView !== "overview" && (
           <button
             onClick={() => setActiveView("overview")}
-            className="flex items-center gap-2 text-gray-600 hover:text-(--color-primary) font-medium transition"
+            className="flex items-center gap-2 font-semibold hover:opacity-80 transition"
+            style={{ color: "var(--color-secondary)" }}
           >
             <FaArrowLeft /> Back to Overview
           </button>
@@ -64,64 +68,54 @@ const UserDashboard = () => {
       </div>
 
       {activeView === "overview" && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Favorites Card */}
-          <div
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <button
+            type="button"
             onClick={() => setActiveView("favorites")}
-            className="bg-amber-50 p-8 rounded-2xl border border-amber-100 cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1 group"
+            className="text-left p-6 sm:p-8 rounded-2xl border-2 border-transparent hover:border-amber-400/50 bg-amber-500/10 dark:bg-amber-500/20 transition hover:shadow-lg group"
           >
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-amber-800">My Favorites</h3>
-              <FaBookmark className="text-3xl text-amber-300 group-hover:text-amber-500 transition" />
+              <h3 className="text-xl font-bold text-amber-700 dark:text-amber-400">My Favorites</h3>
+              <FaBookmark className="text-3xl text-amber-500 dark:text-amber-400 group-hover:scale-110 transition" />
             </div>
-            <p className="text-5xl font-black text-amber-600">
-              {favoritesList.length}
-            </p>
-            <p className="text-sm text-amber-400 mt-4 font-medium">
-              Saved properties &rarr;
-            </p>
-          </div>
+            <p className="text-4xl font-black text-amber-600 dark:text-amber-400">{favoritesList.length}</p>
+            <p className="text-sm font-medium mt-2 text-amber-600/80 dark:text-amber-400/80">Saved properties →</p>
+          </button>
 
-          {/* Tours Card */}
-          <div
+          <button
+            type="button"
             onClick={() => setActiveView("tours")}
-            className="bg-blue-50 p-8 rounded-2xl border border-blue-100 cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1 group"
+            className="text-left p-6 sm:p-8 rounded-2xl border-2 border-transparent hover:border-blue-400/50 bg-blue-500/10 dark:bg-blue-500/20 transition hover:shadow-lg group"
           >
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-blue-800">Tour Requests</h3>
-              <FaCalendarCheck className="text-3xl text-blue-300 group-hover:text-blue-500 transition" />
+              <h3 className="text-xl font-bold text-blue-700 dark:text-blue-400">Tour Requests</h3>
+              <FaCalendarCheck className="text-3xl text-blue-500 dark:text-blue-400 group-hover:scale-110 transition" />
             </div>
-            <p className="text-5xl font-black text-blue-600">{tours.length}</p>
-            <p className="text-sm text-blue-400 mt-4 font-medium">
-              Scheduled visits &rarr;
-            </p>
-          </div>
+            <p className="text-4xl font-black text-blue-600 dark:text-blue-400">{tours.length}</p>
+            <p className="text-sm font-medium mt-2 text-blue-600/80 dark:text-blue-400/80">Scheduled visits →</p>
+          </button>
         </div>
       )}
 
       {activeView === "favorites" && (
         <div>
-          <h3 className="text-2xl font-bold mb-8 flex items-center gap-2">
+          <h3 className="text-xl font-bold mb-6 flex items-center gap-2 flex-wrap" style={{ color: "var(--color-text-main)" }}>
             My Favorites
-            <span className="text-sm font-normal text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
+            <span className="text-sm font-normal px-3 py-1 rounded-full" style={{ backgroundColor: "var(--color-bg-main)", color: "var(--color-text-muted)" }}>
               {favoritesList.length} total
             </span>
           </h3>
           {favoritesList.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {favoritesList.map((property) => (
                 <PropertyItem key={property._id} property={property} />
               ))}
             </div>
           ) : (
-            <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-3xl p-16 text-center">
-              <FaBookmark className="w-16 h-16 text-gray-200 mx-auto mb-4" />
-              <h4 className="text-xl font-bold text-gray-700">
-                No favorites yet
-              </h4>
-              <p className="text-gray-500 mt-2">
-                Discover and save properties you love!
-              </p>
+            <div className="rounded-2xl border-2 border-dashed p-12 sm:p-16 text-center" style={{ borderColor: "var(--color-border)", backgroundColor: "var(--color-bg-main)" }}>
+              <FaBookmark className="w-14 h-14 mx-auto mb-4 opacity-40" style={{ color: "var(--color-text-muted)" }} />
+              <h4 className="text-xl font-bold mb-2" style={{ color: "var(--color-text-main)" }}>No favorites yet</h4>
+              <p style={{ color: "var(--color-text-muted)" }}>Discover and save properties you love!</p>
             </div>
           )}
         </div>
@@ -129,87 +123,73 @@ const UserDashboard = () => {
 
       {activeView === "tours" && (
         <div>
-          <h3 className="text-2xl font-bold mb-8 flex items-center gap-2">
+          <h3 className="text-xl font-bold mb-6 flex items-center gap-2 flex-wrap" style={{ color: "var(--color-text-main)" }}>
             My Tour Requests
-            <span className="text-sm font-normal text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
+            <span className="text-sm font-normal px-3 py-1 rounded-full" style={{ backgroundColor: "var(--color-bg-main)", color: "var(--color-text-muted)" }}>
               {tours.length} requests
             </span>
           </h3>
           {tours.length > 0 ? (
-            <div className="space-y-6">
+            <div className="space-y-4">
               {tours.map((tour) => (
                 <div
                   key={tour._id}
-                  className="bg-white border border-gray-100 rounded-2xl p-6 flex flex-col md:flex-row gap-6 hover:shadow-md transition"
+                  className="rounded-2xl border p-4 sm:p-6 flex flex-col md:flex-row gap-4 hover:shadow-md transition"
+                  style={{ backgroundColor: "var(--color-bg-main)", borderColor: "var(--color-border)" }}
                 >
-                  <div className="w-full md:w-48 h-32 rounded-xl overflow-hidden border border-gray-100 shrink-0">
+                  <div className="w-full md:w-40 h-28 rounded-xl overflow-hidden shrink-0 border" style={{ borderColor: "var(--color-border)" }}>
                     <img
                       src={tour.property?.images?.[0] || "/placeholder.jpg"}
                       alt={tour.property?.title}
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <div className="grow">
-                    <div className="flex justify-between items-start mb-2">
-                      <h4 className="text-xl font-bold text-gray-800">
-                        {tour.property?.title}
-                      </h4>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap justify-between items-start gap-2 mb-2">
+                      <h4 className="font-bold text-lg" style={{ color: "var(--color-text-main)" }}>{tour.property?.title}</h4>
                       <span
-                        className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${
+                        className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${
                           tour.status === "accepted"
-                            ? "bg-green-100 text-green-700"
+                            ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
                             : tour.status === "rejected"
-                              ? "bg-red-100 text-red-700"
-                              : "bg-blue-100 text-blue-700"
+                              ? "bg-red-500/15 text-red-600 dark:text-red-400"
+                              : "bg-blue-500/15 text-blue-600 dark:text-blue-400"
                         }`}
                       >
                         {tour.status}
                       </span>
                     </div>
-                    <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-4">
-                      <p className="flex items-center gap-1.5">
-                        <FaMapMarkerAlt className="text-gray-400" />{" "}
-                        {tour.property?.location}
-                      </p>
-                      <p className="flex items-center gap-1.5">
-                        <FaCalendarAlt className="text-gray-400" /> {tour.date}
-                      </p>
-                      <p className="flex items-center gap-1.5">
-                        <FaClock className="text-gray-400" /> {tour.time}
-                      </p>
+                    <div className="flex flex-wrap gap-4 text-sm mb-2" style={{ color: "var(--color-text-muted)" }}>
+                      <span className="flex items-center gap-1.5"><FaMapMarkerAlt /> {tour.property?.location}</span>
+                      <span className="flex items-center gap-1.5"><FaCalendarAlt /> {tour.date}</span>
+                      <span className="flex items-center gap-1.5"><FaClock /> {tour.time}</span>
                     </div>
                     {tour.message && (
-                      <p className="text-sm text-gray-500 bg-gray-50 p-4 rounded-xl border border-gray-100 italic">
-                        "{tour.message}"
+                      <p className="text-sm p-3 rounded-xl border mt-2 italic" style={{ backgroundColor: "var(--color-bg-card)", borderColor: "var(--color-border)", color: "var(--color-text-muted)" }}>
+                        &quot;{tour.message}&quot;
                       </p>
                     )}
                   </div>
-                  <div className="flex md:flex-col justify-end gap-3 text-right">
-                    <p className="text-xs text-gray-400">
-                      Owner:{" "}
-                      <span className="font-bold">{tour.owner?.name}</span>
+                  <div className="flex md:flex-col justify-end gap-2 text-right shrink-0">
+                    <p className="text-xs" style={{ color: "var(--color-text-muted)" }}>
+                      Owner: <span className="font-bold" style={{ color: "var(--color-text-main)" }}>{tour.owner?.name}</span>
                     </p>
-                    <button
-                      onClick={() =>
-                        (window.location.href = `mailto:${tour.owner?.email}`)
-                      }
-                      className="text-sm font-bold text-(--color-primary) hover:underline"
+                    <a
+                      href={`mailto:${tour.owner?.email}`}
+                      className="text-sm font-bold hover:underline"
+                      style={{ color: "var(--color-secondary)" }}
                     >
                       Contact Owner
-                    </button>
+                    </a>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-3xl p-16 text-center">
-              <FaCalendarCheck className="w-16 h-16 text-gray-200 mx-auto mb-4" />
-              <h4 className="text-xl font-bold text-gray-700">
-                No tours scheduled
-              </h4>
-              <p className="text-gray-500 mt-2">
-                Request a tour on any property details page!
-              </p>
+            <div className="rounded-2xl border-2 border-dashed p-12 sm:p-16 text-center" style={{ borderColor: "var(--color-border)", backgroundColor: "var(--color-bg-main)" }}>
+              <FaCalendarCheck className="w-14 h-14 mx-auto mb-4 opacity-40" style={{ color: "var(--color-text-muted)" }} />
+              <h4 className="text-xl font-bold mb-2" style={{ color: "var(--color-text-main)" }}>No tours scheduled</h4>
+              <p style={{ color: "var(--color-text-muted)" }}>Request a tour on any property details page!</p>
             </div>
           )}
         </div>
